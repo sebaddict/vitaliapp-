@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitaliApp — Deporte en Zona Norte</title>
+<meta name="description" content="Encontrá partidos de fútbol, clases de yoga y comunidad deportiva en Tigre, Pilar, San Isidro y toda la Zona Norte de Buenos Aires.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#000;--orange:#FF6B00;--orange2:#FF8C33;--orangedim:#FF6B0015;
+  --grey1:#0D0D0D;--grey2:#161616;--grey3:#222;--grey4:#333;
+  --greytext:#777;--white:#fff;--green:#00E676;
+  --fd:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:var(--fb);overflow-x:hidden}
+.glow{position:fixed;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,#FF6B0018,transparent 70%);top:-300px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 40px;background:linear-gradient(to bottom,#000000ee,transparent);backdrop-filter:blur(12px)}
+.nlogo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nmark{width:36px;height:36px;border-radius:8px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 20px #FF6B0055}
+.ntext{font-family:var(--fd);font-size:22px;font-weight:900;color:var(--white);letter-spacing:-.5px}
+.ncta{background:var(--orange);color:var(--black);font-family:var(--fd);font-weight:800;font-size:14px;letter-spacing:1px;padding:10px 24px;border-radius:8px;text-decoration:none;transition:all .2s;border:none;cursor:pointer}
+.ncta:hover{background:var(--orange2);transform:translateY(-1px)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative;z-index:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--orangedim);border:1px solid #FF6B0033;border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--orange);margin-bottom:32px;animation:fu .6s ease both}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.htitle{font-family:var(--fd);font-size:clamp(72px,12vw,140px);font-weight:900;line-height:.9;letter-spacing:-2px;margin-bottom:8px;animation:fu .6s ease .1s both}
+.htitle span{color:var(--orange);display:block}
+.hsub{font-size:clamp(18px,2.5vw,24px);color:var(--greytext);max-width:520px;margin:24px auto 0;animation:fu .6s ease .2s both}
+.hzonas{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:20px;animation:fu .6s ease .3s both}
+.ztag{font-size:12px;font-weight:600;letter-spacing:1px;color:var(--greytext);background:var(--grey2);border:1px solid var(--grey3);border-radius:100px;padding:4px 12px}
+.hactions{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:48px;animation:fu .6s ease .4s both}
+.btnp{background:var(--orange);color:var(--black);font-family:var(--fd);font-weight:900;font-size:18px;letter-spacing:1.5px;padding:18px 40px;border-radius:12px;text-decoration:none;border:none;cursor:pointer;box-shadow:0 8px 40px #FF6B0055;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btnp:hover{background:var(--orange2);transform:translateY(-2px);box-shadow:0 12px 50px #FF6B0077}
+.btns{background:transparent;color:var(--white);font-family:var(--fd);font-weight:700;font-size:18px;letter-spacing:1px;padding:18px 40px;border-radius:12px;text-decoration:none;border:1px solid var(--grey4);cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btns:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px)}
+.hstats{display:flex;gap:40px;flex-wrap:wrap;justify-content:center;margin-top:72px;padding-top:48px;border-top:1px solid var(--grey3);width:100%;max-width:600px;animation:fu .6s ease .5s both}
+.snum{font-family:var(--fd);font-size:48px;font-weight:900;color:var(--orange);line-height:1;text-align:center}
+.slbl{font-size:12px;font-weight:600;color:var(--greytext);letter-spacing:1.5px;margin-top:4px;text-transform:uppercase;text-align:center}
+@keyframes fu{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* MARQUEE */
+.mwrap{overflow:hidden;border-top:1px solid var(--grey3);border-bottom:1px solid var(--grey3);padding:16px 0;background:var(--grey1);position:relative;z-index:1}
+.mtrack{display:flex;gap:48px;white-space:nowrap;animation:mq 20s linear infinite;width:max-content}
+.mtrack span{font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:2px;color:var(--greytext);text-transform:uppercase}
+.mtrack .ac{color:var(--orange)}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SECTIONS */
+.sec{padding:100px 24px;position:relative;z-index:1;max-width:1100px;margin:0 auto}
+.slabel{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:3px;color:var(--orange);margin-bottom:16px}
+.stitle{font-family:var(--fd);font-size:clamp(40px,6vw,72px);font-weight:900;line-height:.95;letter-spacing:-1px;margin-bottom:20px}
+.stitle em{color:var(--orange);font-style:normal}
+.sdesc{color:var(--greytext);font-size:18px;max-width:480px;line-height:1.6}
+
+/* SPORTS */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-top:56px}
+.scard{background:var(--grey2);border:1px solid var(--grey3);border-radius:16px;padding:28px 20px;text-align:center;transition:all .3s;position:relative;overflow:hidden}
+.scard::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,#FF6B0010,transparent 70%);opacity:0;transition:opacity .3s}
+.scard:hover{border-color:var(--orange);transform:translateY(-4px);box-shadow:0 12px 40px #FF6B0022}
+.scard:hover::before{opacity:1}
+.semoji{font-size:42px;margin-bottom:12px;display:block}
+.sname{font-family:var(--fd);font-size:18px;font-weight:800;letter-spacing:.5px;margin-bottom:6px}
+.scnt{font-size:12px;color:var(--orange);font-weight:600;letter-spacing:1px}
+
+/* HOW */
+.how{padding:100px 24px;background:var(--grey1);position:relative;z-index:1}
+.howi{max-width:1100px;margin:0 auto}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px;margin-top:64px}
+.step{padding:40px 36px;background:var(--black);border:1px solid var(--grey3);border-radius:20px;transition:border-color .3s}
+.step:hover{border-color:var(--orange)}
+.stepn{font-family:var(--fd);font-size:80px;font-weight:900;color:var(--grey3);line-height:1;margin-bottom:20px;transition:color .3s}
+.step:hover .stepn{color:#FF6B0030}
+.stept{font-family:var(--fd);font-size:28px;font-weight:800;margin-bottom:10px}
+.stepd{color:var(--greytext);font-size:15px;line-height:1.7}
+
+/* ZONAS */
+.zsec{padding:100px 24px;position:relative;z-index:1}
+.zi{max-width:1100px;margin:0 auto}
+.zgrid{display:flex;flex-wrap:wrap;gap:12px;margin-top:48px}
+.zpill{display:flex;align-items:center;gap:8px;background:var(--grey2);border:1px solid var(--grey3);border-radius:100px;padding:12px 24px;font-family:var(--fd);font-size:18px;font-weight:700;transition:all .25s}
+.zpill:hover{background:var(--orangedim);border-color:var(--orange);color:var(--orange)}
+.zdot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0}
+
+/* EXPO */
+.exsec{padding:60px 24px;position:relative;z-index:1;max-width:1100px;margin:0 auto}
+.excard{background:var(--orangedim);border:1px solid #FF6B0033;border-radius:20px;padding:40px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px}
+.excard h3{font-family:var(--fd);font-size:32px;font-weight:900;margin-bottom:8px}
+.excard p{color:var(--greytext);font-size:15px}
+.exsteps{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.exstep{background:var(--grey2);border:1px solid var(--grey3);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--greytext);display:flex;align-items:center;gap:6px}
+.exstep span{color:var(--orange);font-weight:700}
+.exqr{width:100px;height:100px;background:var(--white);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#333;text-align:center;flex-shrink:0;padding:8px;font-weight:600}
+
+/* WAITLIST */
+.wsec{padding:100px 24px;background:var(--grey1);position:relative;z-index:1}
+.wi{max-width:680px;margin:0 auto;text-align:center}
+.wcard{background:var(--black);border:1px solid var(--grey3);border-radius:24px;padding:60px 48px;margin-top:48px;position:relative;overflow:hidden}
+.wcard::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,#FF6B0020,transparent 70%);top:-100px;left:50%;transform:translateX(-50%);pointer-events:none}
+.wform{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
+.winput{flex:1;min-width:220px;background:var(--grey2);border:1px solid var(--grey3);border-radius:10px;color:var(--white);font-family:var(--fb);font-size:16px;padding:16px 20px;outline:none;transition:border-color .2s}
+.winput:focus{border-color:var(--orange)}
+.winput::placeholder{color:var(--greytext)}
+.wbtn{background:var(--orange);color:var(--black);font-family:var(--fd);font-weight:900;font-size:16px;letter-spacing:1px;padding:16px 28px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.wbtn:hover{background:var(--orange2);transform:translateY(-1px)}
+.wbtn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.wfine{font-size:13px;color:var(--greytext);margin-top:16px}
+.wok{display:none;background:#00E67615;border:1px solid var(--green);border-radius:10px;padding:16px 24px;color:var(--green);font-weight:600;margin-top:16px;font-family:var(--fd);font-size:18px;letter-spacing:.5px}
+.werr{display:none;background:#FF444415;border:1px solid #FF4444;border-radius:10px;padding:16px 24px;color:#FF4444;font-weight:600;margin-top:16px;font-family:var(--fd);font-size:16px}
+
+/* FOOTER */
+footer{border-top:1px solid var(--grey3);padding:40px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;max-width:1100px;margin:0 auto;position:relative;z-index:1}
+.flogo{font-family:var(--fd);font-size:20px;font-weight:900;color:var(--white);display:flex;align-items:center;gap:8px}
+.fmark{width:28px;height:28px;border-radius:6px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:14px}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+.rv.on{opacity:1;transform:translateY(0)}
+
+@media(max-width:640px){
+  nav{padding:16px 20px}
+  .hero{padding:100px 20px 60px}
+  .wcard{padding:40px 24px}
+  .excard{padding:28px 24px}
+  .sec{padding:72px 20px}
+}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<nav>
+  <a class="nlogo" href="#">
+    <div class="nmark">⚡</div>
+    <span class="ntext">VITALI</span>
+  </a>
+  <a class="ncta" href="#waitlist">SUMARME →</a>
+</nav>
+
+<section class="hero">
+  <div class="badge"><span class="dot"></span>LANZANDO EN ZONA NORTE · BUENOS AIRES</div>
+  <h1 class="htitle">TU DEPORTE,<span>TU BARRIO.</span></h1>
+  <p class="hsub">Encontrá partidos, clases y canchas cerca tuyo. Conectate con atletas de Tigre, Pilar y toda la Zona Norte.</p>
+  <div class="hzonas">
+    <span class="ztag">📍 TIGRE</span><span class="ztag">📍 PILAR</span>
+    <span class="ztag">📍 NORDELTA</span><span class="ztag">📍 SAN ISIDRO</span>
+    <span class="ztag">📍 Y MÁS</span>
+  </div>
+  <div class="hactions">
+    <a class="btnp" href="#waitlist">QUIERO ENTRAR →</a>
+    <a class="btns" href="#probar">▶ PROBAR AHORA</a>
+  </div>
+  <div class="hstats">
+    <div><div class="snum">9+</div><div class="slbl">Deportes</div></div>
+    <div><div class="snum">11</div><div class="slbl">Zonas</div></div>
+    <div><div class="snum">0$</div><div class="slbl">Para empezar</div></div>
+  </div>
+</section>
+
+<div class="mwrap">
+  <div class="mtrack">
+    <span>⚽ FÚTBOL</span><span class="ac">·</span><span>🧘 YOGA</span><span class="ac">·</span>
+    <span>🏀 BÁSQUET</span><span class="ac">·</span><span>🎾 TENIS</span><span class="ac">·</span>
+    <span>🏃 RUNNING</span><span class="ac">·</span><span>🚴 CICLISMO</span><span class="ac">·</span>
+    <span>🏊 NATACIÓN</span><span class="ac">·</span><span>🏐 VOLEY</span><span class="ac">·</span>
+    <span>🏓 PADEL</span><span class="ac">·</span>
+    <span>⚽ FÚTBOL</span><span class="ac">·</span><span>🧘 YOGA</span><span class="ac">·</span>
+    <span>🏀 BÁSQUET</span><span class="ac">·</span><span>🎾 TENIS</span><span class="ac">·</span>
+    <span>🏃 RUNNING</span><span class="ac">·</span><span>🚴 CICLISMO</span><span class="ac">·</span>
+    <span>🏊 NATACIÓN</span><span class="ac">·</span><span>🏐 VOLEY</span><span class="ac">·</span>
+    <span>🏓 PADEL</span><span class="ac">·</span>
+  </div>
+</div>
+
+<section class="sec" id="deportes">
+  <div class="rv">
+    <div class="slabel">LO QUE ENCONTRÁS</div>
+    <h2 class="stitle">TODOS TUS<br><em>DEPORTES</em></h2>
+    <p class="sdesc">Desde un picadito de fútbol hasta una clase de yoga al amanecer. Todo en tu barrio, todo en un lugar.</p>
+  </div>
+  <div class="sgrid rv">
+    <div class="scard"><span class="semoji">⚽</span><div class="sname">FÚTBOL</div><div class="scnt">EL MÁS POPULAR</div></div>
+    <div class="scard"><span class="semoji">🧘</span><div class="sname">YOGA</div><div class="scnt">CLASES GRUPALES</div></div>
+    <div class="scard"><span class="semoji">🏀</span><div class="sname">BÁSQUET</div><div class="scnt">3x3 Y 5x5</div></div>
+    <div class="scard"><span class="semoji">🎾</span><div class="sname">TENIS</div><div class="scnt">SINGLES Y DOBLES</div></div>
+    <div class="scard"><span class="semoji">🏃</span><div class="sname">RUNNING</div><div class="scnt">GRUPOS LOCALES</div></div>
+    <div class="scard"><span class="semoji">🚴</span><div class="sname">CICLISMO</div><div class="scnt">RUTAS Y SALIDAS</div></div>
+    <div class="scard"><span class="semoji">🏊</span><div class="sname">NATACIÓN</div><div class="scnt">PILETAS LOCALES</div></div>
+    <div class="scard"><span class="semoji">🏓</span><div class="sname">PADEL</div><div class="scnt">CANCHAS CERCA</div></div>
+    <div class="scard"><span class="semoji">🏐</span><div class="sname">VOLEY</div><div class="scnt">PLAYA Y SALÓN</div></div>
+  </div>
+</section>
+
+<div class="how">
+  <div class="howi">
+    <div class="rv">
+      <div class="slabel">ASÍ FUNCIONA</div>
+      <h2 class="stitle">EN 3 PASOS<br><em>YA ESTÁS JUGANDO</em></h2>
+    </div>
+    <div class="steps">
+      <div class="step rv"><div class="stepn">01</div><div class="stept">ELEGÍ TU DEPORTE</div><p class="stepd">Filtrá por fútbol, yoga, tenis o lo que practiques. Ves los eventos en tu zona hoy mismo.</p></div>
+      <div class="step rv"><div class="stepn">02</div><div class="stept">PEDÍ UNIRTE</div><p class="stepd">Mandá una solicitud al organizador. Él aprueba y te desbloqueamos la dirección exacta del evento.</p></div>
+      <div class="step rv"><div class="stepn">03</div><div class="stept">A JUGAR</div><p class="stepd">Llegás, jugás, conocés gente de tu barrio. Podés crear tus propios eventos también.</p></div>
+    </div>
+  </div>
+</div>
+
+<section class="zsec">
+  <div class="zi">
+    <div class="rv">
+      <div class="slabel">COBERTURA</div>
+      <h2 class="stitle">ZONA NORTE<br><em>COMPLETA</em></h2>
+      <p class="sdesc">Empezamos donde más deporte hay. Si no está la tuya, pronto llegamos.</p>
+    </div>
+    <div class="zgrid rv">
+      <div class="zpill"><span class="zdot"></span>Tigre</div>
+      <div class="zpill"><span class="zdot"></span>Nordelta</div>
+      <div class="zpill"><span class="zdot"></span>Pilar</div>
+      <div class="zpill"><span class="zdot"></span>San Isidro</div>
+      <div class="zpill"><span class="zdot"></span>San Fernando</div>
+      <div class="zpill"><span class="zdot"></span>Vicente López</div>
+      <div class="zpill"><span class="zdot"></span>Olivos</div>
+      <div class="zpill"><span class="zdot"></span>Martínez</div>
+      <div class="zpill"><span class="zdot"></span>Acassuso</div>
+      <div class="zpill"><span class="zdot"></span>Beccar</div>
+      <div class="zpill"><span class="zdot"></span>Gral. Pacheco</div>
+    </div>
+  </div>
+</section>
+
+<section class="exsec" id="probar">
+  <div class="excard rv">
+    <div class="excard-text">
+      <h3>PROBÁ LA APP AHORA ⚡</h3>
+      <p>Disponible para Android e iOS vía Expo Go. Sin instalación complicada.</p>
+      <div class="exsteps">
+        <div class="exstep"><span>1.</span>Bajá Expo Go</div>
+        <div class="exstep"><span>2.</span>Escaneá el QR</div>
+        <div class="exstep"><span>3.</span>A jugar</div>
+      </div>
+      <div style="margin-top:20px">
+        <a class="btnp" href="https://snack.expo.dev/@sebaddict/vitaliapp" target="_blank" style="font-size:15px;padding:14px 28px">ABRIR EN EXPO GO →</a>
+      </div>
+    </div>
+    <div class="exqr"><div style="font-size:28px;margin-bottom:4px">📱</div><div>snack.expo.dev/<br>@sebaddict/<br>vitaliapp</div></div>
+  </div>
+</section>
+
+<div class="wsec" id="waitlist">
+  <div class="wi">
+    <div class="rv">
+      <div class="slabel" style="text-align:center">ACCESO ANTICIPADO</div>
+      <h2 class="stitle" style="text-align:center">ENTRÁ<br><em>PRIMERO</em></h2>
+      <p class="sdesc" style="margin:0 auto;text-align:center">Los primeros 200 usuarios de cada zona tienen acceso gratis para siempre.</p>
+    </div>
+    <div class="wcard rv">
+      <div style="font-size:48px;margin-bottom:16px">⚡</div>
+      <h3 style="font-family:var(--fd);font-size:32px;font-weight:900;margin-bottom:8px">SUMATE A LA LISTA</h3>
+      <p style="color:var(--greytext);font-size:15px">Te avisamos el día que tu zona esté activa. Sin spam, prometido.</p>
+      <form class="wform" id="wform" onsubmit="joinWaitlist(event)">
+        <input class="winput" type="email" id="wemail" placeholder="tu@email.com" required autocomplete="email">
+        <button class="wbtn" type="submit" id="wbtn">QUIERO ENTRAR →</button>
+      </form>
+      <div class="wok" id="wok">✓ ¡Estás adentro! Te avisamos cuando tu zona esté lista.</div>
+      <div class="werr" id="werr">⚠ Ese email ya está registrado. ¡Ya estás en la lista!</div>
+      <p class="wfine">Sin spam · Podés salir cuando quieras · Solo Zona Norte BA</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="flogo"><div class="fmark">⚡</div>VITALIAPP</div>
+  <p style="color:var(--greytext);font-size:13px">Zona Norte · Buenos Aires · 2026</p>
+  <p style="color:var(--greytext);font-size:13px">Hecho con ⚡ para la comunidad deportiva</p>
+</footer>
+
+<script>
+const SB_URL  = 'https://qjutbnewvkhdjmjdiges.supabase.co';
+const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqdXRibmV3dmtoZGptamRpZ2VzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjMxODAsImV4cCI6MjA4OTY5OTE4MH0.CjQa5BLBrXjEP-oIhHNPbeE20l72v2Dz30SqWJdmpV8';
+
+async function joinWaitlist(e) {
+  e.preventDefault();
+  const email = document.getElementById('wemail').value.trim();
+  const btn   = document.getElementById('wbtn');
+  const form  = document.getElementById('wform');
+  const ok    = document.getElementById('wok');
+  const err   = document.getElementById('werr');
+
+  btn.textContent = 'ENVIANDO...';
+  btn.disabled = true;
+  err.style.display = 'none';
+
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/waitlist`, {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'apikey':        SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Prefer':        'return=minimal'
+      },
+      body: JSON.stringify({ email })
+    });
+
+    if (res.status === 201) {
+      form.style.display = 'none';
+      ok.style.display   = 'block';
+    } else if (res.status === 409) {
+      err.textContent    = '⚠ Ese email ya está registrado. ¡Ya estás en la lista!';
+      err.style.display  = 'block';
+      btn.textContent    = 'QUIERO ENTRAR →';
+      btn.disabled       = false;
+    } else {
+      throw new Error(res.status);
+    }
+  } catch(ex) {
+    err.textContent   = '⚠ Error al registrarse. Intentá de nuevo.';
+    err.style.display = 'block';
+    btn.textContent   = 'QUIERO ENTRAR →';
+    btn.disabled      = false;
+  }
+}
+
+// Scroll reveal
+new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('on'); } });
+}, { threshold: 0.1 }).observe
+// Fix: observar todos los .rv
+;(()=>{
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); } });
+  },{threshold:0.1});
+  document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+})();
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t = document.querySelector(a.getAttribute('href'));
+    if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth',block:'start'}); }
+  });
+});
+</script>
+</body>
+</html>
