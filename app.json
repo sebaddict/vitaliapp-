@@ -1,26 +1,45 @@
 {
-  "name": "vitaliapp",
-  "version": "1.0.0",
-  "main": "App.js",
-  "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
-  },
-  "dependencies": {
-    "@react-native-async-storage/async-storage": "2.1.2",
-    "@supabase/supabase-js": "2.49.1",
-    "expo": "~53.0.0",
-    "expo-constants": "~17.1.8",
-    "expo-location": "~18.1.5",
-    "expo-status-bar": "~2.2.3",
-    "react": "19.0.0",
-    "react-native": "0.79.6",
-    "react-native-url-polyfill": "2.0.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.25.0"
-  },
-  "private": true
+  "expo": {
+    "name": "VitaliApp",
+    "slug": "vitaliapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#000000",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.vitaliapp.app",
+      "buildNumber": "1"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FF6B00"
+      },
+      "package": "com.vitaliapp.app",
+      "versionCode": 1,
+      "edgeToEdgeEnabled": false
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "VitaliApp necesita tu ubicación para mostrarte eventos cercanos."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c43b877a-2975-4cf5-95bb-e2cb1733c2cb"
+      }
+    },
+    "owner": "sebaddict"
+  }
 }
