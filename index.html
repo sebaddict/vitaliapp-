@@ -3,205 +3,316 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VitaliApp — Tu deporte, tu barrio</title>
-<meta name="description" content="Encontrá partidos de fútbol, clases de yoga y comunidad deportiva en Tigre, Pilar, San Isidro y toda la Zona Norte de Buenos Aires.">
+<title>VitaliApp — ¿Y vos? ¿Tenés VitaliApp?</title>
+<meta name="description" content="Tu deporte, tu conexión, tus tiempos. Fútbol, yoga, running y más en Pilar y zona norte de Buenos Aires.">
+<meta property="og:title" content="VitaliApp — ¿Y vos? ¿Tenés VitaliApp?">
+<meta property="og:description" content="Tu deporte, tu conexión, tus tiempos. Zona norte Buenos Aires.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --orange:#FF6B00; --orange2:#FF8C33; --orangedim:#FF6B0012;
-  --black:#000; --dark:#1A1A1A; --mid:#E5E5E5;
-  --bg:#FFFFFF; --bg2:#F7F7F7; --bg3:#F0F0F0;
-  --text:#111111; --text2:#444444; --muted:#888888;
-  --green:#00A882; --green-dim:#00A88210;
-  --r:8px; --r2:14px;
-  --fp:'Montserrat',sans-serif; --fb:'Inter',sans-serif;
+  --orange:#FF6B00;--orange2:#FF8C33;--odim:#FF6B0012;--oborder:#FF6B0030;
+  --bg:#FFFFFF;--bg2:#F8F8F8;--bg3:#F2F2F2;
+  --text:#111;--text2:#555;--muted:#888;--border:#E8E8E8;
+  --green:#00A882;--gdim:#00A88212;
+  --r:8px;--r2:14px;--r3:20px;
+  --fp:'Montserrat',sans-serif;--fb:'Inter',sans-serif;
 }
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:16px;line-height:1.6;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);overflow-x:hidden;line-height:1.6}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;
   display:flex;align-items:center;justify-content:space-between;
-  padding:18px 48px;
-  background:rgba(255,255,255,0.92);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--mid);}
-.nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none}
-.logo-sym{width:36px;height:36px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px #FF6B0033}
-.logo-sym svg{width:18px;height:18px}
-.logo-wm{font-family:var(--fp);font-weight:800;font-size:18px;letter-spacing:4px;color:var(--text)}
-.nav-right{display:flex;align-items:center;gap:20px}
-.nav-link{font-family:var(--fp);font-weight:600;font-size:11px;letter-spacing:2px;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color .2s}
-.nav-link:hover{color:var(--orange)}
-.nav-cta{background:var(--orange);color:#fff;font-family:var(--fp);font-weight:800;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:10px 22px;border-radius:var(--r);text-decoration:none;transition:all .2s}
-.nav-cta:hover{background:var(--orange2);transform:translateY(-1px)}
+  padding:16px 48px;background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nlogo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nsym{width:34px;height:34px;border-radius:50%;background:var(--orange);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px #FF6B0033}
+.nsym svg{width:16px;height:16px}
+.nwm{font-family:var(--fp);font-weight:800;font-size:17px;letter-spacing:4px;color:var(--text)}
+.nright{display:flex;align-items:center;gap:20px}
+.nlink{font-family:var(--fp);font-weight:600;font-size:11px;letter-spacing:2px;
+  color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color .2s}
+.nlink:hover{color:var(--orange)}
+.ncta{background:var(--orange);color:#fff;font-family:var(--fp);font-weight:800;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  padding:10px 22px;border-radius:var(--r);text-decoration:none;transition:all .2s}
+.ncta:hover{background:var(--orange2);transform:translateY(-1px)}
 
-/* HERO */
-.hero{min-height:100vh;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:130px 24px 80px;background:var(--bg)}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--orangedim);border:1px solid var(--orange);border-radius:999px;padding:6px 18px;font-family:var(--fp);font-weight:700;font-size:11px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:32px;animation:fadeUp .6s ease both}
-.badge-dot{width:6px;height:6px;border-radius:50%;background:#00A882;animation:pulse 2s ease-in-out infinite}
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:120px 24px 80px;
+  background:linear-gradient(180deg,#fff 60%,var(--bg2) 100%)}
+.hbadge{display:inline-flex;align-items:center;gap:8px;background:var(--odim);
+  border:1px solid var(--orange);border-radius:999px;padding:6px 18px;
+  font-family:var(--fp);font-weight:700;font-size:11px;letter-spacing:3px;
+  color:var(--orange);text-transform:uppercase;margin-bottom:28px;
+  animation:fu .6s ease both}
+.bdot{width:6px;height:6px;border-radius:50%;background:var(--green);
+  animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.6)}}
-.hero-eyebrow{font-family:var(--fp);font-weight:700;font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;animation:fadeUp .6s .05s ease both}
-.hero-title{font-family:var(--fp);font-weight:800;font-size:clamp(44px,7.5vw,96px);line-height:0.95;letter-spacing:-2px;margin-bottom:10px;color:var(--text);animation:fadeUp .6s .1s ease both}
-.hero-title .acc{color:var(--orange);display:block}
-.hero-tagline{font-family:var(--fp);font-weight:600;font-size:clamp(13px,1.6vw,16px);color:var(--muted);letter-spacing:2px;margin-bottom:24px;text-transform:uppercase;animation:fadeUp .6s .15s ease both}
-.hero-sub{font-size:clamp(15px,1.8vw,19px);color:var(--text2);max-width:500px;line-height:1.7;animation:fadeUp .6s .2s ease both}
-.hero-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px;animation:fadeUp .6s .25s ease both}
-.z-chip{font-family:var(--fp);font-weight:600;font-size:11px;letter-spacing:1px;color:var(--muted);background:var(--bg2);border:1px solid var(--mid);border-radius:999px;padding:5px 14px;text-transform:uppercase}
-.hero-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:44px;animation:fadeUp .6s .3s ease both}
-.btn-p{background:var(--orange);color:#fff;font-family:var(--fp);font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:17px 40px;border-radius:var(--r);text-decoration:none;border:none;cursor:pointer;box-shadow:0 6px 24px #FF6B0030;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
-.btn-p:hover{background:var(--orange2);transform:translateY(-2px);box-shadow:0 12px 40px #FF6B0040}
-.btn-s{background:transparent;color:var(--text);font-family:var(--fp);font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:17px 40px;border-radius:var(--r);text-decoration:none;border:1.5px solid var(--mid);cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
-.btn-s:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px)}
-.hero-stats{display:flex;gap:40px;flex-wrap:wrap;justify-content:center;align-items:center;margin-top:72px;padding-top:40px;border-top:1.5px solid var(--mid);width:100%;max-width:540px;animation:fadeUp .6s .4s ease both}
-.stat-n{font-family:var(--fp);font-size:40px;font-weight:800;color:var(--orange);line-height:1;text-align:center}
-.stat-l{font-family:var(--fp);font-size:10px;font-weight:700;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:4px;text-align:center}
-.stat-dv{width:1px;height:36px;background:var(--mid)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.heyebrow{font-family:var(--fp);font-weight:700;font-size:11px;letter-spacing:4px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:12px;animation:fu .6s .05s ease both}
+.htitle{font-family:var(--fp);font-weight:900;
+  font-size:clamp(36px,6vw,80px);line-height:0.95;
+  letter-spacing:-2px;color:var(--text);margin-bottom:8px;animation:fu .6s .1s ease both}
+.htitle .acc{color:var(--orange);display:block}
+.hslogan{font-family:var(--fp);font-weight:700;
+  font-size:clamp(14px,2vw,20px);color:var(--orange);
+  letter-spacing:1px;margin-bottom:16px;animation:fu .6s .15s ease both}
+.hsub{font-size:clamp(15px,1.6vw,18px);color:var(--text2);
+  max-width:520px;line-height:1.7;animation:fu .6s .2s ease both}
+.hchips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  margin-top:18px;animation:fu .6s .25s ease both}
+.zchip{font-family:var(--fp);font-weight:600;font-size:11px;letter-spacing:1px;
+  color:var(--muted);background:var(--bg2);border:1px solid var(--border);
+  border-radius:999px;padding:5px 14px;text-transform:uppercase}
+.hactions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;
+  margin-top:40px;animation:fu .6s .3s ease both}
+.btnp{background:var(--orange);color:#fff;font-family:var(--fp);font-weight:800;
+  font-size:13px;letter-spacing:2px;text-transform:uppercase;
+  padding:16px 38px;border-radius:var(--r);text-decoration:none;border:none;
+  cursor:pointer;box-shadow:0 6px 24px #FF6B0028;transition:all .25s;
+  display:inline-flex;align-items:center;gap:8px}
+.btnp:hover{background:var(--orange2);transform:translateY(-2px);box-shadow:0 12px 40px #FF6B0038}
+.btns{background:transparent;color:var(--text);font-family:var(--fp);font-weight:700;
+  font-size:13px;letter-spacing:2px;text-transform:uppercase;
+  padding:16px 38px;border-radius:var(--r);text-decoration:none;
+  border:1.5px solid var(--border);cursor:pointer;transition:all .25s;
+  display:inline-flex;align-items:center;gap:8px}
+.btns:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-2px)}
+.hstats{display:flex;gap:36px;flex-wrap:wrap;justify-content:center;align-items:center;
+  margin-top:64px;padding-top:36px;border-top:1.5px solid var(--border);
+  width:100%;max-width:520px;animation:fu .6s .4s ease both}
+.stn{font-family:var(--fp);font-size:38px;font-weight:800;
+  color:var(--orange);line-height:1;text-align:center}
+.stl{font-family:var(--fp);font-size:10px;font-weight:700;letter-spacing:3px;
+  color:var(--muted);text-transform:uppercase;margin-top:4px;text-align:center}
+.stdv{width:1px;height:32px;background:var(--border)}
+@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-/* MARQUEE */
-.mq-wrap{overflow:hidden;border-top:1.5px solid var(--mid);border-bottom:1.5px solid var(--mid);padding:13px 0;background:var(--bg2)}
-.mq-track{display:flex;gap:36px;white-space:nowrap;animation:mq 22s linear infinite;width:max-content}
-.mq-track span{font-family:var(--fp);font-size:12px;font-weight:700;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-.mq-track .o{color:var(--orange)}
+/* ── MARQUEE ── */
+.mqwrap{overflow:hidden;border-top:1.5px solid var(--border);
+  border-bottom:1.5px solid var(--border);padding:12px 0;background:var(--bg2)}
+.mqtrack{display:flex;gap:32px;white-space:nowrap;
+  animation:mq 22s linear infinite;width:max-content}
+.mqtrack span{font-family:var(--fp);font-size:12px;font-weight:700;
+  letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+.mqtrack .o{color:var(--orange)}
 @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* SECTIONS */
-.sec{padding:88px 24px;position:relative;max-width:1100px;margin:0 auto}
-.sec-bg{background:var(--bg2)}
-.sec-bg-i{max-width:1100px;margin:0 auto;padding:88px 24px}
-.s-lbl{font-family:var(--fp);font-size:10px;font-weight:700;letter-spacing:4px;color:var(--orange);text-transform:uppercase;margin-bottom:10px}
-.s-ttl{font-family:var(--fp);font-size:clamp(32px,4.5vw,58px);font-weight:800;line-height:0.96;letter-spacing:-1.5px;margin-bottom:18px;color:var(--text)}
-.s-ttl em{color:var(--orange);font-style:normal}
-.s-dsc{color:var(--text2);font-size:17px;max-width:440px;line-height:1.7}
+/* ── SECTIONS ── */
+.sec{padding:88px 24px;max-width:1100px;margin:0 auto}
+.secbg{background:var(--bg2)}
+.secbgi{max-width:1100px;margin:0 auto;padding:88px 24px}
+.slbl{font-family:var(--fp);font-size:10px;font-weight:700;letter-spacing:4px;
+  color:var(--orange);text-transform:uppercase;margin-bottom:8px}
+.sttl{font-family:var(--fp);font-size:clamp(28px,4vw,52px);font-weight:800;
+  line-height:0.96;letter-spacing:-1.5px;margin-bottom:16px;color:var(--text)}
+.sttl em{color:var(--orange);font-style:normal}
+.sdsc{color:var(--text2);font-size:16px;max-width:440px;line-height:1.7}
 
-/* SPORTS GRID */
-.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:52px}
-.sc{background:var(--bg);border:1.5px solid var(--mid);border-radius:var(--r2);padding:26px 14px;text-align:center;transition:all .3s;cursor:default;position:relative;overflow:hidden}
-.sc:hover{border-color:var(--orange);transform:translateY(-3px);box-shadow:0 12px 32px #FF6B0012}
-.sc-emoji{font-size:38px;display:block;margin-bottom:8px}
-.sc-name{font-family:var(--fp);font-size:13px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px;color:var(--text)}
-.sc-tag{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--orange);text-transform:uppercase}
+/* ── SPORTS GRID con fotos ── */
+.sportsgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:14px;margin-top:52px}
+.sportcard{border-radius:var(--r2);overflow:hidden;border:1.5px solid var(--border);
+  transition:all .3s;cursor:default;position:relative;background:var(--bg)}
+.sportcard:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.08);
+  border-color:var(--orange)}
+.sportphoto{width:100%;height:140px;object-fit:cover;display:block;
+  background:var(--bg3);transition:transform .4s}
+.sportphoto.placeholder{display:flex;align-items:center;justify-content:center;
+  font-size:48px;height:140px;background:linear-gradient(135deg,var(--bg2),var(--bg3))}
+.sportcard:hover .sportphoto{transform:scale(1.04)}
+.sportinfo{padding:12px 14px}
+.sportname{font-family:var(--fp);font-size:13px;font-weight:800;
+  letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;color:var(--text)}
+.sporttag{font-size:10px;font-weight:600;letter-spacing:2px;
+  color:var(--orange);text-transform:uppercase}
+.sportbadge{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.55);
+  color:#fff;font-family:var(--fp);font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:999px;letter-spacing:1px;backdrop-filter:blur(4px)}
 
-/* STEPS */
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:56px}
-.step{background:var(--bg);border:1.5px solid var(--mid);border-radius:var(--r2);padding:36px 28px;transition:border-color .3s}
+/* ── ZONA MAP VISUAL ── */
+.zonamap{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:12px;margin-top:44px}
+.zonapill{display:flex;align-items:center;gap:12px;background:var(--bg);
+  border:1.5px solid var(--border);border-radius:var(--r2);padding:14px 18px;
+  font-family:var(--fp);font-size:14px;font-weight:700;
+  transition:all .25s;color:var(--text)}
+.zonapill:hover{background:var(--odim);border-color:var(--orange);color:var(--orange)}
+.zicon{font-size:22px;flex-shrink:0}
+.zdist{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+
+/* ── STEPS ── */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:20px;margin-top:52px}
+.step{background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--r2);padding:32px 26px;transition:all .3s}
 .step:hover{border-color:var(--orange);box-shadow:0 8px 32px #FF6B0010}
-.step-n{font-family:var(--fp);font-size:64px;font-weight:800;color:var(--mid);line-height:1;margin-bottom:18px;transition:color .3s}
-.step:hover .step-n{color:#FF6B0020}
-.step-ttl{font-family:var(--fp);font-size:22px;font-weight:800;letter-spacing:-.3px;margin-bottom:8px;color:var(--text)}
-.step-dsc{color:var(--text2);font-size:14px;line-height:1.7}
+.stepn{font-family:var(--fp);font-size:56px;font-weight:900;
+  color:var(--border);line-height:1;margin-bottom:16px;transition:color .3s}
+.step:hover .stepn{color:var(--odim)}
+.stepttl{font-family:var(--fp);font-size:20px;font-weight:800;
+  letter-spacing:-.3px;margin-bottom:8px;color:var(--text)}
+.stepdsc{color:var(--text2);font-size:14px;line-height:1.7}
 
-/* ZONAS */
-.zonas{display:flex;flex-wrap:wrap;gap:10px;margin-top:44px}
-.zp{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--mid);border-radius:999px;padding:11px 20px;font-family:var(--fp);font-size:15px;font-weight:700;transition:all .25s;color:var(--text)}
-.zp:hover{background:var(--orangedim);border-color:var(--orange);color:var(--orange)}
-.zdot{width:7px;height:7px;border-radius:50%;background:var(--orange);flex-shrink:0}
+/* ── PLANS ── */
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:18px;margin-top:44px}
+.plan{background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--r2);padding:32px 24px;transition:all .3s;position:relative}
+.plan.feat{border-color:var(--orange);box-shadow:0 8px 40px var(--oborder)}
+.planbadge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--orange);color:#fff;font-family:var(--fp);font-size:10px;
+  font-weight:800;letter-spacing:2px;padding:4px 14px;border-radius:999px;
+  text-transform:uppercase;white-space:nowrap}
+.planname{font-family:var(--fp);font-size:12px;font-weight:700;
+  letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+.planprice{font-family:var(--fp);font-size:42px;font-weight:900;
+  line-height:1;color:var(--text);margin-bottom:3px}
+.planprice span{font-size:16px;color:var(--muted);font-weight:600}
+.planperiod{font-size:11px;color:var(--muted);margin-bottom:20px}
+.planfeats{list-style:none;display:flex;flex-direction:column;
+  gap:9px;margin-bottom:24px}
+.planfeats li{font-size:13px;color:var(--text2);
+  display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.planfeats li::before{content:'✓';color:var(--orange);font-weight:900;
+  font-size:12px;margin-top:2px;flex-shrink:0}
 
-/* PREVIEW CARD */
-.preview-card{background:var(--text);color:#fff;border-radius:var(--r2);padding:40px 44px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px}
-.preview-title{font-family:var(--fp);font-size:28px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
-.preview-desc{color:#999;font-size:14px;margin-bottom:18px;line-height:1.6}
-.preview-steps{display:flex;gap:8px;flex-wrap:wrap}
-.prev-step{background:#222;border:1px solid #333;border-radius:var(--r);padding:7px 13px;font-family:var(--fp);font-size:12px;font-weight:600;color:#888;display:flex;align-items:center;gap:5px}
-.prev-step b{color:var(--orange)}
-.prev-qr{width:100px;height:100px;background:#fff;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:#333;text-align:center;padding:10px;font-family:var(--fp);font-weight:600;line-height:1.4;flex-shrink:0}
+/* ── WAITLIST ── */
+.wlcard{background:var(--bg2);border:1.5px solid var(--border);
+  border-radius:var(--r2);padding:48px 40px;margin-top:36px;
+  max-width:580px;margin-left:auto;margin-right:auto}
+.wlicon{font-size:40px;margin-bottom:12px}
+.wlttl{font-family:var(--fp);font-size:26px;font-weight:800;
+  letter-spacing:-.5px;margin-bottom:6px;color:var(--text)}
+.wlsub{color:var(--text2);font-size:14px;margin-bottom:0}
+.wlform{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.wlinput{flex:1;min-width:200px;background:var(--bg);
+  border:1.5px solid var(--border);border-radius:var(--r);
+  color:var(--text);font-family:var(--fb);font-size:15px;
+  padding:13px 16px;outline:none;transition:border-color .2s}
+.wlinput:focus{border-color:var(--orange)}
+.wlinput::placeholder{color:#ccc}
+.wlbtn{background:var(--orange);color:#fff;font-family:var(--fp);
+  font-weight:800;font-size:12px;letter-spacing:2px;text-transform:uppercase;
+  padding:13px 24px;border-radius:var(--r);border:none;cursor:pointer;
+  transition:all .2s;white-space:nowrap}
+.wlbtn:hover{background:var(--orange2);transform:translateY(-1px)}
+.wlbtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.wlfine{font-size:11px;color:#bbb;margin-top:12px;
+  font-family:var(--fp);letter-spacing:1px}
+.wlok{display:none;margin-top:16px;background:var(--gdim);
+  border:1px solid var(--green);border-radius:var(--r);
+  padding:14px 18px;color:var(--green);font-family:var(--fp);
+  font-weight:700;font-size:14px;text-align:center}
+.wlerr{display:none;margin-top:16px;background:#FF404010;
+  border:1px solid #FF4040;border-radius:var(--r);
+  padding:14px 18px;color:#FF4040;font-family:var(--fp);
+  font-weight:700;font-size:13px;text-align:center}
+/* Counter waitlist */
+.wlcounter{display:flex;align-items:center;gap:8px;margin-top:14px}
+.wlcount-num{font-family:var(--fp);font-weight:900;font-size:22px;color:var(--orange)}
+.wlcount-lbl{font-size:12px;color:var(--muted)}
 
-/* PREMIUM */
-.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:48px}
-.plan{background:var(--bg);border:1.5px solid var(--mid);border-radius:var(--r2);padding:36px 28px;transition:all .3s;position:relative}
-.plan.featured{border-color:var(--orange);box-shadow:0 8px 40px #FF6B0015}
-.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-family:var(--fp);font-size:10px;font-weight:800;letter-spacing:2px;padding:4px 16px;border-radius:999px;text-transform:uppercase;white-space:nowrap}
-.plan-name{font-family:var(--fp);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
-.plan-price{font-family:var(--fp);font-size:46px;font-weight:800;line-height:1;color:var(--text);margin-bottom:4px}
-.plan-price span{font-size:18px;color:var(--muted);font-weight:600}
-.plan-period{font-size:12px;color:var(--muted);margin-bottom:24px}
-.plan-feats{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
-.plan-feats li{font-size:14px;color:var(--text2);display:flex;align-items:center;gap:8px}
-.plan-feats li::before{content:'✓';color:var(--orange);font-weight:800;font-size:13px}
+/* ── PREVIEW DARK ── */
+.previewsec{background:#111;padding:88px 24px}
+.previewinner{max-width:1100px;margin:0 auto;display:flex;
+  align-items:center;justify-content:space-between;flex-wrap:wrap;gap:32px}
+.previewtxt .slbl{color:var(--orange)}
+.previewtxt .sttl{color:#fff}
+.previewtxt .sdsc{color:#999}
+.prevsteps{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.prevstep{background:#222;border:1px solid #333;border-radius:var(--r);
+  padding:8px 14px;font-family:var(--fp);font-size:12px;font-weight:600;
+  color:#888;display:flex;align-items:center;gap:6px}
+.prevstep b{color:var(--orange)}
+.prevqr{width:110px;height:110px;background:#fff;border-radius:var(--r);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:10px;color:#333;text-align:center;padding:10px;
+  font-family:var(--fp);font-weight:700;line-height:1.4;flex-shrink:0}
 
-/* WAITLIST */
-.wl-card{background:var(--bg2);border:1.5px solid var(--mid);border-radius:var(--r2);padding:52px 44px;margin-top:40px;position:relative;overflow:hidden;max-width:600px;margin-left:auto;margin-right:auto}
-.wl-icon{font-size:44px;margin-bottom:14px}
-.wl-title{font-family:var(--fp);font-size:30px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px;color:var(--text)}
-.wl-sub{color:var(--text2);font-size:15px;margin-bottom:0}
-.wl-form{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
-.wl-input{flex:1;min-width:200px;background:var(--bg);border:1.5px solid var(--mid);border-radius:var(--r);color:var(--text);font-family:var(--fb);font-size:15px;padding:14px 18px;outline:none;transition:border-color .2s}
-.wl-input:focus{border-color:var(--orange)}
-.wl-input::placeholder{color:#bbb}
-.wl-btn{background:var(--orange);color:#fff;font-family:var(--fp);font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:14px 26px;border-radius:var(--r);border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
-.wl-btn:hover{background:var(--orange2);transform:translateY(-1px)}
-.wl-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.wl-fine{font-size:11px;color:#bbb;margin-top:14px;font-family:var(--fp);letter-spacing:1px}
-.wl-ok{display:none;margin-top:18px;background:var(--green-dim);border:1px solid var(--green);border-radius:var(--r);padding:14px 20px;color:var(--green);font-family:var(--fp);font-weight:700;font-size:14px}
-.wl-err{display:none;margin-top:18px;background:#FF404010;border:1px solid #FF4040;border-radius:var(--r);padding:14px 20px;color:#FF4040;font-family:var(--fp);font-weight:700;font-size:13px}
+/* ── FOOTER ── */
+footer{border-top:1.5px solid var(--border);padding:32px 24px}
+.footerinner{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;max-width:1100px;margin:0 auto}
+.flogo{display:flex;align-items:center;gap:10px;font-family:var(--fp);
+  font-size:14px;font-weight:800;letter-spacing:3px;color:var(--text)}
+.fmark{width:26px;height:26px;border-radius:50%;background:var(--orange);
+  display:flex;align-items:center;justify-content:center}
+.fmark svg{width:13px;height:13px}
+.fmeta{font-size:11px;color:var(--muted);font-family:var(--fp);letter-spacing:1px}
 
-/* FOOTER */
-footer{border-top:1.5px solid var(--mid);padding:36px 24px}
-.footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;max-width:1100px;margin:0 auto}
-.f-logo{display:flex;align-items:center;gap:10px;font-family:var(--fp);font-size:15px;font-weight:800;letter-spacing:3px;color:var(--text)}
-.f-mark{width:26px;height:26px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center}
-.f-mark svg{width:13px;height:13px}
-.f-meta{font-size:12px;color:var(--muted);font-family:var(--fp);letter-spacing:1px}
-
-/* REVEAL */
-.rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+/* ── REVEAL ── */
+.rv{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease}
 .rv.on{opacity:1;transform:translateY(0)}
 .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
 
-@media(max-width:768px){nav{padding:14px 18px}.nav-link{display:none}.hero{padding:110px 18px 70px}.wl-card{padding:32px 20px}.sec{padding:64px 18px}.sec-bg-i{padding:64px 18px}}
+@media(max-width:768px){
+  nav{padding:14px 18px}.nlink{display:none}
+  .hero{padding:100px 18px 60px}
+  .sec{padding:64px 18px}
+  .secbgi{padding:64px 18px}
+  .wlcard{padding:32px 18px}
+  .previewsec{padding:64px 18px}
+}
 </style>
 </head>
 <body>
 
 <nav>
-  <a class="nav-logo" href="#">
-    <div class="logo-sym">
+  <a class="nlogo" href="#">
+    <div class="nsym">
       <svg viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="white" stroke="white" stroke-width="0.5" stroke-linejoin="round"/></svg>
     </div>
-    <span class="logo-wm">VITALIAPP</span>
+    <span class="nwm">VITALIAPP</span>
   </a>
-  <div class="nav-right">
-    <a class="nav-link" href="#deportes">Deportes</a>
-    <a class="nav-link" href="#zonas">Zonas</a>
-    <a class="nav-link" href="#premium">Premium</a>
-    <a class="nav-cta" href="#waitlist">SUMARME →</a>
+  <div class="nright">
+    <a class="nlink" href="#deportes">Deportes</a>
+    <a class="nlink" href="#zonas">Zonas</a>
+    <a class="nlink" href="#premium">Planes</a>
+    <a class="ncta" href="#waitlist">SUMARME →</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge"><span class="badge-dot"></span>Lanzando en Zona Norte · Buenos Aires</div>
-  <div class="hero-eyebrow">Energía que te conecta</div>
-  <h1 class="hero-title">
-    TU DEPORTE,
-    <span class="acc">TU BARRIO.</span>
+  <div class="hbadge"><span class="bdot"></span>Lanzando en Pilar y alrededores</div>
+  <div class="heyebrow">Zona Norte de Buenos Aires · 2026</div>
+  <h1 class="htitle">
+    ¿Y VOS?
+    <span class="acc">¿TENÉS VITALIAPP?</span>
   </h1>
-  <p class="hero-tagline">Zona Norte · Buenos Aires · 2026</p>
-  <p class="hero-sub">Encontrá partidos, clases y canchas cerca tuyo. Conectate con atletas de Tigre, Pilar y toda la Zona Norte.</p>
-  <div class="hero-chips">
-    <span class="z-chip">📍 Tigre</span><span class="z-chip">📍 Pilar</span>
-    <span class="z-chip">📍 Nordelta</span><span class="z-chip">📍 San Isidro</span>
-    <span class="z-chip">📍 San Fernando</span><span class="z-chip">📍 + más</span>
+  <p class="hslogan">Tu deporte, tu conexión, tus tiempos.</p>
+  <p class="hsub">Encontrá partidos, clases y canchas cerca tuyo en Pilar, Tortuguitas, Del Viso, Garín y toda la zona.</p>
+  <div class="hchips">
+    <span class="zchip">📍 Pilar</span>
+    <span class="zchip">📍 Tortuguitas</span>
+    <span class="zchip">📍 Del Viso</span>
+    <span class="zchip">📍 Garín</span>
+    <span class="zchip">📍 Escobar</span>
+    <span class="zchip">📍 + más</span>
   </div>
-  <div class="hero-actions">
-    <a class="btn-p" href="#waitlist">Quiero entrar →</a>
-    <a class="btn-s" href="#probar">▶ Probar ahora</a>
+  <div class="hactions">
+    <a class="btnp" href="#waitlist">Quiero entrar →</a>
+    <a class="btns" href="#probar">▶ Probar ahora</a>
   </div>
-  <div class="hero-stats">
-    <div><div class="stat-n">9+</div><div class="stat-l">Deportes</div></div>
-    <div class="stat-dv"></div>
-    <div><div class="stat-n">11</div><div class="stat-l">Zonas</div></div>
-    <div class="stat-dv"></div>
-    <div><div class="stat-n">$0</div><div class="stat-l">Para empezar</div></div>
+  <div class="hstats">
+    <div><div class="stn" id="ev-count">29</div><div class="stl">Eventos activos</div></div>
+    <div class="stdv"></div>
+    <div><div class="stn">9+</div><div class="stl">Deportes</div></div>
+    <div class="stdv"></div>
+    <div><div class="stn">25km</div><div class="stl">Radio cubierto</div></div>
   </div>
 </section>
 
 <!-- MARQUEE -->
-<div class="mq-wrap">
-  <div class="mq-track">
+<div class="mqwrap">
+  <div class="mqtrack">
     <span>⚽ Fútbol</span><span class="o">·</span><span>🧘 Yoga</span><span class="o">·</span>
     <span>🏀 Básquet</span><span class="o">·</span><span>🎾 Tenis</span><span class="o">·</span>
     <span>🏃 Running</span><span class="o">·</span><span>🚴 Ciclismo</span><span class="o">·</span>
@@ -215,132 +326,247 @@ footer{border-top:1.5px solid var(--mid);padding:36px 24px}
   </div>
 </div>
 
-<!-- DEPORTES -->
+<!-- DEPORTES con fotos -->
 <section class="sec" id="deportes">
-  <div class="rv"><div class="s-lbl">Lo que encontrás</div>
-    <h2 class="s-ttl">Todos tus<br><em>deportes</em></h2>
-    <p class="s-dsc">Desde un picadito hasta una clase de yoga al amanecer. Todo en tu barrio, todo en un lugar.</p>
+  <div class="rv">
+    <div class="slbl">Lo que encontrás</div>
+    <h2 class="sttl">9 deportes,<br><em>un solo lugar</em></h2>
+    <p class="sdsc">Desde un picadito con amigos hasta una clase de yoga al amanecer. Todo cerca tuyo, todo en un lugar.</p>
   </div>
-  <div class="sg rv d1">
-    <div class="sc"><span class="sc-emoji">⚽</span><div class="sc-name">Fútbol</div><div class="sc-tag">El más popular</div></div>
-    <div class="sc"><span class="sc-emoji">🧘</span><div class="sc-name">Yoga</div><div class="sc-tag">Clases grupales</div></div>
-    <div class="sc"><span class="sc-emoji">🏀</span><div class="sc-name">Básquet</div><div class="sc-tag">3×3 y 5×5</div></div>
-    <div class="sc"><span class="sc-emoji">🎾</span><div class="sc-name">Tenis</div><div class="sc-tag">Singles y dobles</div></div>
-    <div class="sc"><span class="sc-emoji">🏃</span><div class="sc-name">Running</div><div class="sc-tag">Grupos locales</div></div>
-    <div class="sc"><span class="sc-emoji">🚴</span><div class="sc-name">Ciclismo</div><div class="sc-tag">Rutas y salidas</div></div>
-    <div class="sc"><span class="sc-emoji">🏊</span><div class="sc-name">Natación</div><div class="sc-tag">Piletas locales</div></div>
-    <div class="sc"><span class="sc-emoji">🏓</span><div class="sc-name">Padel</div><div class="sc-tag">Canchas cerca</div></div>
-    <div class="sc"><span class="sc-emoji">🏐</span><div class="sc-name">Voley</div><div class="sc-tag">Playa y salón</div></div>
+  <div class="sportsgrid rv d1">
+
+    <div class="sportcard">
+      <div class="sportphoto placeholder">⚽</div>
+      <div class="sportinfo">
+        <div class="sportname">Fútbol</div>
+        <div class="sporttag">El más popular · 5v5 y 7v7</div>
+      </div>
+      <div class="sportbadge">⚡ Hot</div>
+    </div>
+
+    <div class="sportcard">
+      <div class="sportphoto placeholder">🧘</div>
+      <div class="sportinfo">
+        <div class="sportname">Yoga</div>
+        <div class="sporttag">Clases grupales · Aire libre</div>
+      </div>
+    </div>
+
+    <div class="sportcard">
+      <div class="sportphoto placeholder">🏀</div>
+      <div class="sportinfo">
+        <div class="sportname">Básquet</div>
+        <div class="sporttag">3×3 y 5×5</div>
+      </div>
+    </div>
+
+    <div class="sportcard">
+      <div class="sportphoto placeholder">🎾</div>
+      <div class="sportinfo">
+        <div class="sportname">Tenis</div>
+        <div class="sporttag">Singles y dobles</div>
+      </div>
+    </div>
+
+    <div class="sportcard">
+      <div class="sportphoto placeholder">🏃</div>
+      <div class="sportinfo">
+        <div class="sportname">Running</div>
+        <div class="sporttag">Grupos locales · 5K a 20K</div>
+      </div>
+      <div class="sportbadge">Gratis</div>
+    </div>
+
+    <div class="sportcard">
+      <div class="sportphoto placeholder">🚴</div>
+      <div class="sportinfo">
+        <div class="sportname">Ciclismo</div>
+        <div class="sporttag">Rutas y salidas</div>
+      </div>
+    </div>
+
+    <div class="sportcard">
+      <div class="sportphoto placeholder">🏊</div>
+      <div class="sportinfo">
+        <div class="sportname">Natación</div>
+        <div class="sporttag">Piletas locales</div>
+      </div>
+    </div>
+
+    <div class="sportcard">
+      <div class="sportphoto placeholder">🏓</div>
+      <div class="sportinfo">
+        <div class="sportname">Padel</div>
+        <div class="sporttag">Canchas techadas</div>
+      </div>
+    </div>
+
+    <div class="sportcard">
+      <div class="sportphoto placeholder">🏐</div>
+      <div class="sportinfo">
+        <div class="sportname">Voley</div>
+        <div class="sporttag">Playa y salón</div>
+      </div>
+    </div>
+
   </div>
 </section>
 
 <!-- CÓMO FUNCIONA -->
-<div class="sec-bg">
-  <div class="sec-bg-i">
-    <div class="rv"><div class="s-lbl">Así funciona</div>
-      <h2 class="s-ttl">En 3 pasos<br><em>ya estás jugando</em></h2>
+<div class="secbg">
+  <div class="secbgi">
+    <div class="rv">
+      <div class="slbl">Así funciona</div>
+      <h2 class="sttl">En 3 pasos<br><em>ya estás jugando</em></h2>
     </div>
     <div class="steps">
-      <div class="step rv d1"><div class="step-n">01</div><div class="step-ttl">Elegí tu deporte</div><p class="step-dsc">Filtrá por fútbol, yoga, tenis o lo que practiques. Ves los eventos cerca tuyo hoy mismo.</p></div>
-      <div class="step rv d2"><div class="step-n">02</div><div class="step-ttl">Pedí unirte</div><p class="step-dsc">Mandá una solicitud al organizador. Él aprueba y desbloqueás la dirección exacta del evento.</p></div>
-      <div class="step rv d3"><div class="step-n">03</div><div class="step-ttl">A jugar</div><p class="step-dsc">Llegás, jugás, conocés gente de tu barrio. Podés crear tus propios eventos para que otros se sumen.</p></div>
+      <div class="step rv d1">
+        <div class="stepn">01</div>
+        <div class="stepttl">Elegí tu deporte</div>
+        <p class="stepdsc">Filtrá por fútbol, yoga, tenis o lo que practiques. Ves los eventos disponibles hoy mismo cerca tuyo.</p>
+      </div>
+      <div class="step rv d2">
+        <div class="stepn">02</div>
+        <div class="stepttl">Pedí unirte</div>
+        <p class="stepdsc">Mandá una solicitud al organizador. Cuando aprueba, te desbloqueamos la dirección exacta del evento.</p>
+      </div>
+      <div class="step rv d3">
+        <div class="stepn">03</div>
+        <div class="stepttl">A jugar</div>
+        <p class="stepdsc">Llegás, jugás, conocés gente de tu zona. También podés crear tus propios eventos para que otros se sumen.</p>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- ZONAS -->
 <section class="sec" id="zonas">
-  <div class="rv"><div class="s-lbl">Cobertura</div>
-    <h2 class="s-ttl">Zona Norte<br><em>completa</em></h2>
-    <p class="s-dsc">Empezamos donde más deporte hay. Si no está la tuya, pronto llegamos.</p>
+  <div class="rv">
+    <div class="slbl">Cobertura</div>
+    <h2 class="sttl">Pilar y<br><em>25km a la redonda</em></h2>
+    <p class="sdsc">Empezamos en el corazón de Zona Norte. Si tu barrio no está, pronto llegamos.</p>
   </div>
-  <div class="zonas rv d1">
-    <div class="zp"><span class="zdot"></span>Tigre</div>
-    <div class="zp"><span class="zdot"></span>Nordelta</div>
-    <div class="zp"><span class="zdot"></span>Pilar</div>
-    <div class="zp"><span class="zdot"></span>San Isidro</div>
-    <div class="zp"><span class="zdot"></span>San Fernando</div>
-    <div class="zp"><span class="zdot"></span>Vicente López</div>
-    <div class="zp"><span class="zdot"></span>Olivos</div>
-    <div class="zp"><span class="zdot"></span>Martínez</div>
-    <div class="zp"><span class="zdot"></span>Acassuso</div>
-    <div class="zp"><span class="zdot"></span>Beccar</div>
-    <div class="zp"><span class="zdot"></span>Gral. Pacheco</div>
+  <div class="zonamap rv d1">
+    <div class="zonapill">
+      <span class="zicon">📍</span>
+      <div><div>Pilar</div><div class="zdist">Centro · 0km</div></div>
+    </div>
+    <div class="zonapill">
+      <span class="zicon">📍</span>
+      <div><div>Del Viso</div><div class="zdist">~8km</div></div>
+    </div>
+    <div class="zonapill">
+      <span class="zicon">📍</span>
+      <div><div>Tortuguitas</div><div class="zdist">~12km</div></div>
+    </div>
+    <div class="zonapill">
+      <span class="zicon">📍</span>
+      <div><div>Garín</div><div class="zdist">~18km</div></div>
+    </div>
+    <div class="zonapill">
+      <span class="zicon">📍</span>
+      <div><div>Escobar</div><div class="zdist">~20km</div></div>
+    </div>
+    <div class="zonapill">
+      <span class="zicon">📍</span>
+      <div><div>Maquinista Savio</div><div class="zdist">~22km</div></div>
+    </div>
+    <div class="zonapill">
+      <span class="zicon">📍</span>
+      <div><div>Los Polvorines</div><div class="zdist">~23km</div></div>
+    </div>
+    <div class="zonapill">
+      <span class="zicon">📍</span>
+      <div><div>Grand Bourg</div><div class="zdist">~24km</div></div>
+    </div>
+    <div class="zonapill">
+      <span class="zicon">📍</span>
+      <div><div>Belén de Escobar</div><div class="zdist">~25km</div></div>
+    </div>
+    <div class="zonapill">
+      <span class="zicon">📍</span>
+      <div><div>Muñiz</div><div class="zdist">~25km</div></div>
+    </div>
   </div>
 </section>
 
-<!-- PREMIUM -->
-<div class="sec-bg" id="premium">
-  <div class="sec-bg-i">
-    <div class="rv"><div class="s-lbl">Planes</div>
-      <h2 class="s-ttl">Simple y<br><em>sin sorpresas</em></h2>
-      <p class="s-dsc">Empezá gratis. Upgradeá cuando quieras más.</p>
+<!-- PLANES -->
+<div class="secbg" id="premium">
+  <div class="secbgi">
+    <div class="rv">
+      <div class="slbl">Planes</div>
+      <h2 class="sttl">Simple y<br><em>sin sorpresas</em></h2>
+      <p class="sdsc">Empezá gratis. Upgradeá cuando quieras más.</p>
     </div>
     <div class="plans rv d1">
       <div class="plan">
-        <div class="plan-name">Free</div>
-        <div class="plan-price">$0<span>/mes</span></div>
-        <div class="plan-period">Para siempre</div>
-        <ul class="plan-feats">
+        <div class="planname">Free</div>
+        <div class="planprice">$0<span>/mes</span></div>
+        <div class="planperiod">Para siempre</div>
+        <ul class="planfeats">
           <li>Ver eventos cerca tuyo</li>
           <li>Solicitar unirte a 3 eventos/mes</li>
           <li>Crear 1 evento/mes</li>
           <li>Chat grupal del evento</li>
+          <li>Perfil con historial y logros</li>
         </ul>
-        <a class="btn-s" href="#waitlist" style="width:100%;justify-content:center;font-size:12px;padding:14px">EMPEZAR GRATIS</a>
+        <a class="btns" href="#waitlist" style="width:100%;justify-content:center;font-size:12px;padding:13px">EMPEZAR GRATIS</a>
       </div>
-      <div class="plan featured">
-        <div class="plan-badge">MÁS POPULAR</div>
-        <div class="plan-name">Premium</div>
-        <div class="plan-price">$6.900<span>/mes</span></div>
-        <div class="plan-period">o $66.200/año · Ahorrás 20%</div>
-        <ul class="plan-feats">
+      <div class="plan feat">
+        <div class="planbadge">MÁS POPULAR</div>
+        <div class="planname">Premium</div>
+        <div class="planprice">$6.900<span>/mes</span></div>
+        <div class="planperiod">o $66.200/año · Ahorrás 20%</div>
+        <ul class="planfeats">
           <li>Eventos ilimitados</li>
           <li>Descuento 15% en eventos pagos</li>
-          <li>Filtros avanzados por nivel</li>
+          <li>Filtros avanzados por nivel y radio</li>
           <li>Perfil verificado ✓</li>
           <li>Matching inteligente de jugadores</li>
           <li>Prioridad en solicitudes</li>
+          <li>Cobro vía MercadoPago</li>
         </ul>
-        <a class="btn-p" href="#waitlist" style="width:100%;justify-content:center;font-size:12px;padding:14px">QUIERO PREMIUM →</a>
+        <a class="btnp" href="#waitlist" style="width:100%;justify-content:center;font-size:12px;padding:13px">QUIERO PREMIUM →</a>
       </div>
       <div class="plan">
-        <div class="plan-name">Centro Deportivo</div>
-        <div class="plan-price">$18.000<span>/mes</span></div>
-        <div class="plan-period">Para organizadores y complejos</div>
-        <ul class="plan-feats">
+        <div class="planname">Centro Deportivo</div>
+        <div class="planprice">$18.000<span>/mes</span></div>
+        <div class="planperiod">Para complejos y organizadores</div>
+        <ul class="planfeats">
           <li>Perfil verificado de centro ✓</li>
           <li>Publicar actividades ilimitadas</li>
           <li>Cobro online vía MercadoPago</li>
           <li>Panel de gestión de reservas</li>
           <li>Estadísticas de asistencia</li>
+          <li>Destacado en el feed</li>
         </ul>
-        <a class="btn-s" href="#waitlist" style="width:100%;justify-content:center;font-size:12px;padding:14px">REGISTRAR CENTRO</a>
+        <a class="btns" href="#waitlist" style="width:100%;justify-content:center;font-size:12px;padding:13px">REGISTRAR CENTRO</a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- PROBAR -->
-<div class="sec-bg" id="probar" style="background:var(--text)">
-  <div class="sec-bg-i">
-    <div class="preview-card rv">
-      <div>
-        <div class="preview-title">Probá la app ahora ⚡</div>
-        <p class="preview-desc">Disponible para Android e iOS vía Expo Go. Sin instalación complicada.</p>
-        <div class="preview-steps">
-          <div class="prev-step"><b>1.</b> Bajá Expo Go</div>
-          <div class="prev-step"><b>2.</b> Escaneá el QR</div>
-          <div class="prev-step"><b>3.</b> A jugar</div>
-        </div>
-        <div style="margin-top:22px">
-          <a class="btn-p" href="https://snack.expo.dev/@sebaddict/vitaliapp" target="_blank" style="font-size:12px;padding:13px 26px">Abrir en Expo Go →</a>
-        </div>
+<!-- PROBAR AHORA -->
+<div class="previewsec" id="probar">
+  <div class="previewinner">
+    <div class="previewtxt">
+      <div class="slbl">Disponible ahora</div>
+      <h2 class="sttl" style="color:#fff">Probá la app<br><em>hoy mismo ⚡</em></h2>
+      <p class="sdsc">Sin instalación complicada. Abrí Expo Go en tu Android o iPhone y escaneá el QR.</p>
+      <div class="prevsteps">
+        <div class="prevstep"><b>1.</b> Bajá Expo Go</div>
+        <div class="prevstep"><b>2.</b> Escaneá el QR</div>
+        <div class="prevstep"><b>3.</b> A jugar</div>
       </div>
-      <div class="prev-qr">
-        <div style="font-size:30px;margin-bottom:5px">📱</div>
-        snack.expo.dev/<br>@sebaddict/<br>vitaliapp
+      <div style="margin-top:22px">
+        <a class="btnp" href="https://snack.expo.dev/@sebaddict/vitaliapp" target="_blank" style="font-size:12px;padding:13px 24px">
+          Abrir en Expo Go →
+        </a>
       </div>
+    </div>
+    <div class="prevqr">
+      <div style="font-size:28px;margin-bottom:6px">📱</div>
+      snack.expo.dev/<br>@sebaddict/<br>vitaliapp
     </div>
   </div>
 </div>
@@ -348,32 +574,38 @@ footer{border-top:1.5px solid var(--mid);padding:36px 24px}
 <!-- WAITLIST -->
 <section class="sec" id="waitlist">
   <div class="rv" style="text-align:center;max-width:560px;margin:0 auto">
-    <div class="s-lbl" style="text-align:center">Acceso anticipado</div>
-    <h2 class="s-ttl" style="text-align:center">Entrá<br><em>primero</em></h2>
-    <p class="s-dsc" style="margin:0 auto;text-align:center">Los primeros 200 usuarios de cada zona tienen acceso gratis para siempre. No te quedés afuera.</p>
+    <div class="slbl" style="text-align:center">Acceso anticipado</div>
+    <h2 class="sttl" style="text-align:center">Sé de los<br><em>primeros</em></h2>
+    <p class="sdsc" style="margin:0 auto;text-align:center">Los primeros 200 usuarios de Pilar y cada zona tienen acceso gratis para siempre.</p>
   </div>
-  <div class="wl-card rv d1">
-    <div class="wl-icon">⚡</div>
-    <div class="wl-title">Sumate a la lista</div>
-    <p class="wl-sub">Te avisamos el día que tu zona esté activa. Sin spam, prometido.</p>
-    <form class="wl-form" id="wl-form" onsubmit="joinWL(event)">
-      <input class="wl-input" type="email" id="wl-email" placeholder="tu@email.com" required>
-      <button class="wl-btn" type="submit" id="wl-btn">Quiero entrar →</button>
+  <div class="wlcard rv d1">
+    <div class="wlicon">⚡</div>
+    <div class="wlttl">Sumate a la lista</div>
+    <p class="wlsub">Te avisamos el día que tu zona esté activa. Sin spam, prometido.</p>
+    <div class="wlcounter">
+      <span class="wlcount-num" id="wl-num">2</span>
+      <span class="wlcount-lbl">personas ya anotadas en tu zona</span>
+    </div>
+    <form class="wlform" id="wl-form" onsubmit="joinWL(event)">
+      <input class="wlinput" type="email" id="wl-email" placeholder="tu@email.com" required autocomplete="email">
+      <button class="wlbtn" type="submit" id="wl-btn">Quiero entrar →</button>
     </form>
-    <div class="wl-ok" id="wl-ok">✓ ¡Estás adentro! Te avisamos cuando tu zona esté lista.</div>
-    <div class="wl-err" id="wl-err">⚠ Ese email ya está registrado.</div>
-    <p class="wl-fine">Sin spam · Podés salir cuando quieras · Solo Zona Norte BA</p>
+    <div class="wlok" id="wl-ok">✓ ¡Estás adentro! Te avisamos cuando tu zona esté activa. ⚡</div>
+    <div class="wlerr" id="wl-err">⚠ Ese email ya está registrado. ¡Ya estás en la lista!</div>
+    <p class="wlfine">Sin spam · Podés salir cuando quieras · Solo Zona Norte BA</p>
   </div>
 </section>
 
 <footer>
-  <div class="footer-inner">
-    <div class="f-logo">
-      <div class="f-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="white" stroke="white" stroke-width="0.5" stroke-linejoin="round"/></svg></div>
+  <div class="footerinner">
+    <div class="flogo">
+      <div class="fmark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="white" stroke="white" stroke-width="0.5" stroke-linejoin="round"/></svg>
+      </div>
       VITALIAPP
     </div>
-    <p class="f-meta">Zona Norte · Buenos Aires · 2026</p>
-    <p class="f-meta">Hecho con ⚡ para la comunidad deportiva</p>
+    <p class="fmeta">Tu deporte, tu conexión, tus tiempos.</p>
+    <p class="fmeta">Pilar · Zona Norte · Buenos Aires · 2026</p>
   </div>
 </footer>
 
@@ -381,25 +613,80 @@ footer{border-top:1.5px solid var(--mid);padding:36px 24px}
 const SB_URL='https://qjutbnewvkhdjmjdiges.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqdXRibmV3dmtoZGptamRpZ2VzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjMxODAsImV4cCI6MjA4OTY5OTE4MH0.CjQa5BLBrXjEP-oIhHNPbeE20l72v2Dz30SqWJdmpV8';
 
-async function joinWL(e){
+// Cargar contador de waitlist en tiempo real
+async function loadWaitlistCount() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/waitlist?select=count`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`,
+        'Prefer': 'count=exact', 'Range-Unit': 'items', 'Range': '0-0' }
+    });
+    const count = res.headers.get('content-range')?.split('/')[1];
+    if (count) document.getElementById('wl-num').textContent = count;
+  } catch(e) {}
+}
+loadWaitlistCount();
+
+async function joinWL(e) {
   e.preventDefault();
-  const email=document.getElementById('wl-email').value.trim();
-  const btn=document.getElementById('wl-btn');
-  const ok=document.getElementById('wl-ok');
-  const err=document.getElementById('wl-err');
-  btn.textContent='Enviando...';btn.disabled=true;err.style.display='none';
-  try{
-    const res=await fetch(`${SB_URL}/rest/v1/waitlist`,{method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Prefer':'return=minimal'},body:JSON.stringify({email})});
-    if(res.status===201){document.getElementById('wl-form').style.display='none';ok.style.display='block';}
-    else if(res.status===409){err.textContent='⚠ Ese email ya está registrado. ¡Ya estás en la lista!';err.style.display='block';btn.textContent='Quiero entrar →';btn.disabled=false;}
-    else throw new Error();
-  }catch{err.textContent='⚠ Error al registrarse. Intentá de nuevo.';err.style.display='block';btn.textContent='Quiero entrar →';btn.disabled=false;}
+  const email = document.getElementById('wl-email').value.trim();
+  const btn = document.getElementById('wl-btn');
+  const ok = document.getElementById('wl-ok');
+  const err = document.getElementById('wl-err');
+  btn.textContent = 'Enviando...'; btn.disabled = true;
+  err.style.display = 'none'; ok.style.display = 'none';
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/waitlist`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json',
+        'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`,
+        'Prefer': 'return=minimal' },
+      body: JSON.stringify({ email, zona: 'pilar' })
+    });
+    if (res.status === 201) {
+      document.getElementById('wl-form').style.display = 'none';
+      ok.style.display = 'block';
+      loadWaitlistCount();
+    } else if (res.status === 409) {
+      err.textContent = '⚠ Ese email ya está registrado. ¡Ya estás en la lista!';
+      err.style.display = 'block';
+      btn.textContent = 'Quiero entrar →'; btn.disabled = false;
+    } else throw new Error(res.status);
+  } catch(ex) {
+    err.textContent = '⚠ Error al registrarse. Intentá de nuevo.';
+    err.style.display = 'block';
+    btn.textContent = 'Quiero entrar →'; btn.disabled = false;
+  }
 }
 
+// Cargar cuenta de eventos activos desde Supabase
+async function loadEventCount() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/events?status=eq.activo&select=count`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`,
+        'Prefer': 'count=exact', 'Range': '0-0' }
+    });
+    const count = res.headers.get('content-range')?.split('/')[1];
+    if (count && document.getElementById('ev-count'))
+      document.getElementById('ev-count').textContent = count;
+  } catch(e) {}
+}
+loadEventCount();
+
 // Scroll reveal
-(()=>{const o=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')}),{threshold:.08});document.querySelectorAll('.rv').forEach(el=>o.observe(el))})();
+(()=>{
+  const o = new IntersectionObserver(entries =>
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on'); }),
+    { threshold: .08 });
+  document.querySelectorAll('.rv').forEach(el => o.observe(el));
+})();
+
 // Smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}}));
+document.querySelectorAll('a[href^="#"]').forEach(a =>
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if(t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth', block:'start' }); }
+  })
+);
 </script>
 </body>
 </html>
