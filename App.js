@@ -1,15 +1,10 @@
 // ============================================================
-// VITALIAPP — App.js v3.0 FINAL
-// ✅ Montserrat (Manual de Marca v1.0)
-// ✅ Supabase Auth + DB real (vitaliapp-prod)
-// ✅ 8 eventos seed Zona Norte
-// ✅ Flujo aprobación + notificaciones DB
-// ✅ Sprint 1 completo
-// ============================================================
-// EXPO SNACK: dependencias necesarias:
-//   @supabase/supabase-js
-//   @react-native-async-storage/async-storage
-//   @expo-google-fonts/montserrat (opcional, ver nota)
+// VITALIAPP — App.js v4.0
+// ✅ Geolocalización real — eventos ordenados por distancia
+// ✅ Montserrat · Manual de Marca v1.0
+// ✅ Supabase: vitaliapp-prod
+// ✅ Edge Function: nearby-events
+// ✅ 14 eventos · 10 zonas · 9 deportes
 // ============================================================
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
@@ -21,12 +16,14 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
+import * as Location from "expo-location";
 
 // ─────────────────────────────────────────────
-// SUPABASE — vitaliapp-prod
+// SUPABASE
 // ─────────────────────────────────────────────
-const SB_URL  = "https://qjutbnewvkhdjmjdiges.supabase.co";
-const SB_KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqdXRibmV3dmtoZGptamRpZ2VzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjMxODAsImV4cCI6MjA4OTY5OTE4MH0.CjQa5BLBrXjEP-oIhHNPbeE20l72v2Dz30SqWJdmpV8";
+const SB_URL = "https://qjutbnewvkhdjmjdiges.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqdXRibmV3dmtoZGptamRpZ2VzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjMxODAsImV4cCI6MjA4OTY5OTE4MH0.CjQa5BLBrXjEP-oIhHNPbeE20l72v2Dz30SqWJdmpV8";
+const NEARBY_FN = `${SB_URL}/functions/v1/nearby-events`;
 
 const supabase = createClient(SB_URL, SB_KEY, {
   auth: { storage: AsyncStorage, autoRefreshToken: true, persistSession: true, detectSessionInUrl: false },
@@ -36,26 +33,13 @@ const supabase = createClient(SB_URL, SB_KEY, {
 // DESIGN TOKENS — Manual de Marca v1.0
 // ─────────────────────────────────────────────
 const C = {
-  orange:     "#FF6B00",
-  orange2:    "#FF8C33",
-  orangeDim:  "#FF6B0018",
-  black:      "#000000",
-  dark:       "#1A1A1A",
-  mid:        "#333333",
-  white:      "#FFFFFF",
-  muted:      "#888888",
-  green:      "#00C2A8",
-  greenDim:   "#00C2A810",
-  red:        "#FF4040",
-  redDim:     "#FF404010",
-  radiusSm:   8,
-  radiusMd:   12,
+  orange: "#FF6B00", orange2: "#FF8C33", orangeDim: "#FF6B0018",
+  black: "#000000", dark: "#1A1A1A", mid: "#333333",
+  white: "#FFFFFF", muted: "#888888",
+  green: "#00C2A8", greenDim: "#00C2A810",
+  red: "#FF4040", redDim: "#FF404010",
+  radiusSm: 8, radiusMd: 12,
 };
-
-// Montserrat via fontFamily string (Expo Snack lo resuelve via Google Fonts)
-const FM = "Montserrat_800ExtraBold";
-const FB = "System"; // fallback Inter-like
-
 const { width: SW } = Dimensions.get("window");
 
 const SPORT_ICONS  = { futbol:"⚽",basquet:"🏀",tenis:"🎾",padel:"🏓",running:"🏃",ciclismo:"🚴",yoga:"🧘",natacion:"🏊",voley:"🏐",otro:"🏅" };
@@ -89,24 +73,76 @@ function useAuth() {
     setProfile(data); setLoading(false);
   };
 
-  return { session, profile, loading, signOut: () => supabase.auth.signOut(), reload: () => session && loadProfile(session.user.id) };
+  return { session, profile, loading, signOut: () => supabase.auth.signOut() };
 }
 
-function useFeed(sportFilter) {
-  const [events, setEvents]     = useState([]);
-  const [loading, setLoading]   = useState(true);
+// Hook de geolocalización
+function useGeoLocation() {
+  const [coords, setCoords]   = useState(null);
+  const [geoError, setGeoError] = useState(null);
+  const [geoLoading, setGeoLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setGeoError("Permiso de ubicación denegado");
+          // Usar coordenadas por defecto: Tigre, Zona Norte
+          setCoords({ latitude: -34.4261, longitude: -58.5795 });
+          setGeoLoading(false);
+          return;
+        }
+        const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+        setCoords({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
+      } catch (e) {
+        setGeoError("No se pudo obtener ubicación");
+        setCoords({ latitude: -34.4261, longitude: -58.5795 }); // fallback Tigre
+      } finally {
+        setGeoLoading(false);
+      }
+    })();
+  }, []);
+
+  return { coords, geoError, geoLoading };
+}
+
+// Feed con geolocalización
+function useNearbyFeed(coords, sportFilter, radius = 30) {
+  const [events, setEvents]       = useState([]);
+  const [loading, setLoading]     = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetch = useCallback(async (quiet = false) => {
+    if (!coords) return;
     quiet ? setRefreshing(true) : setLoading(true);
-    let q = supabase.from("feed_events").select("*").order("starts_at").limit(40);
-    if (sportFilter) q = q.eq("sport", sportFilter);
-    const { data, error } = await q;
-    if (!error && data) setEvents(data);
-    setLoading(false); setRefreshing(false);
-  }, [sportFilter]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+    try {
+      const params = new URLSearchParams({
+        lat: coords.latitude.toString(),
+        lng: coords.longitude.toString(),
+        radius: radius.toString(),
+        ...(sportFilter ? { sport: sportFilter } : {}),
+      });
+
+      const res = await global.fetch(`${NEARBY_FN}?${params}`, {
+        headers: { "apikey": SB_KEY, "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      if (data.events) setEvents(data.events);
+    } catch {
+      // Fallback al feed_events normal
+      let q = supabase.from("feed_events").select("*").order("starts_at").limit(30);
+      if (sportFilter) q = q.eq("sport", sportFilter);
+      const { data } = await q;
+      if (data) setEvents(data);
+    }
+
+    setLoading(false); setRefreshing(false);
+  }, [coords, sportFilter, radius]);
+
+  useEffect(() => { if (coords) fetch(); }, [fetch]);
+
   return { events, loading, refreshing, refetch: () => fetch(true) };
 }
 
@@ -123,20 +159,19 @@ function useNotifications(userId) {
       if (data) { setNotifs(data); setUnread(data.filter(n => !n.read).length); }
     };
     load();
-    // Realtime
     const ch = supabase.channel("notifs-" + userId)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
-        (payload) => { setNotifs(prev => [payload.new, ...prev]); setUnread(u => u + 1); }
+        (payload) => { setNotifs(p => [payload.new, ...p]); setUnread(u => u + 1); }
       ).subscribe();
     return () => supabase.removeChannel(ch);
   }, [userId]);
 
-  const markAllRead = async () => {
+  const markRead = async () => {
     await supabase.from("notifications").update({ read: true }).eq("user_id", userId);
-    setUnread(0); setNotifs(prev => prev.map(n => ({ ...n, read: true })));
+    setUnread(0); setNotifs(p => p.map(n => ({ ...n, read: true })));
   };
 
-  return { notifs, unread, markAllRead };
+  return { notifs, unread, markRead };
 }
 
 // ─────────────────────────────────────────────
@@ -144,25 +179,26 @@ function useNotifications(userId) {
 // ─────────────────────────────────────────────
 function Loader({ text = "Cargando..." }) {
   return (
-    <View style={{ flex:1, alignItems:"center", justifyContent:"center", backgroundColor: C.black }}>
+    <View style={{ flex:1, alignItems:"center", justifyContent:"center", backgroundColor:C.black }}>
       <ActivityIndicator size="large" color={C.orange} />
-      <Text style={{ color:C.muted, marginTop:12, fontWeight:"600" }}>{text}</Text>
+      <Text style={[u.muted, { marginTop:12 }]}>{text}</Text>
     </View>
   );
 }
 
-function VInput({ label, ...props }) {
+function VInput({ label, style, ...props }) {
   return (
     <View style={{ marginBottom:16 }}>
       {label && <Text style={u.lbl}>{label}</Text>}
-      <TextInput style={u.input} placeholderTextColor={C.muted} {...props} />
+      <TextInput style={[u.input, style]} placeholderTextColor={C.muted} {...props} />
     </View>
   );
 }
 
 function OBtn({ title, onPress, busy, style, small }) {
   return (
-    <TouchableOpacity style={[u.oBtn, small && { paddingVertical:10, paddingHorizontal:16 }, style]}
+    <TouchableOpacity
+      style={[u.oBtn, small && { paddingVertical:10, paddingHorizontal:16 }, style]}
       onPress={onPress} activeOpacity={0.85} disabled={busy}>
       {busy ? <ActivityIndicator color={C.black} size="small" />
             : <Text style={[u.oBtnText, small && { fontSize:12 }]}>{title}</Text>}
@@ -201,16 +237,14 @@ function Splash({ onEnter }) {
       <StatusBar barStyle="light-content" backgroundColor={C.black} />
       <View style={s.splashGlow} />
       <Animated.View style={{ opacity:fade, transform:[{scale}], alignItems:"center" }}>
-        <View style={s.logoMark}>
-          <Text style={{ fontSize:40 }}>⚡</Text>
-        </View>
+        <View style={s.logoMark}><Text style={{ fontSize:40 }}>⚡</Text></View>
         <Text style={s.logoWord}>VITALIAPP</Text>
-        <Text style={s.logoTagline}>ENERGÍA QUE TE CONECTA</Text>
+        <Text style={s.logoSub}>ENERGÍA QUE TE CONECTA</Text>
       </Animated.View>
       <Animated.View style={[{ width:"100%", alignItems:"center" }, { opacity:fade, transform:[{translateY:slide}] }]}>
         <Text style={s.splashHero}>TU DEPORTE,{"\n"}TU BARRIO.</Text>
         <OBtn title="EMPEZAR →" onPress={onEnter} style={{ width:"100%", marginTop:32 }} />
-        <Text style={{ color:C.muted, fontSize:12, marginTop:14 }}>Zona Norte · Buenos Aires</Text>
+        <Text style={[u.muted, { marginTop:14, fontSize:11 }]}>Zona Norte · Buenos Aires</Text>
       </Animated.View>
     </View>
   );
@@ -220,14 +254,14 @@ function Splash({ onEnter }) {
 // AUTH
 // ─────────────────────────────────────────────
 function Auth() {
-  const [mode, setMode] = useState("login");
-  const [email, setEmail] = useState("");
+  const [mode, setMode]       = useState("login");
+  const [email, setEmail]     = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [zona, setZona] = useState(null);
-  const [sports, setSports] = useState([]);
-  const [level, setLevel] = useState(null);
+  const [name, setName]       = useState("");
+  const [busy, setBusy]       = useState(false);
+  const [zona, setZona]       = useState(null);
+  const [sports, setSports]   = useState([]);
+  const [level, setLevel]     = useState(null);
 
   const login = async () => {
     if (!email || !password) return Alert.alert("Completá email y contraseña");
@@ -247,42 +281,35 @@ function Auth() {
   };
 
   const saveProfile = async () => {
-    if (!zona || sports.length === 0 || !level) return Alert.alert("Completá tu perfil deportivo");
+    if (!zona || sports.length === 0 || !level) return Alert.alert("Completá tu perfil");
     setBusy(true);
     const { data: { session } } = await supabase.auth.getSession();
     await supabase.from("profiles").update({ zona, sports, skill_level: level }).eq("id", session.user.id);
     setBusy(false);
   };
 
-  const toggleSport = (s) => setSports(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s]);
-
   if (mode === "onboarding") return (
     <SafeAreaView style={{ flex:1, backgroundColor:C.black }}>
       <ScrollView contentContainerStyle={{ padding:24, paddingTop:40 }}>
         <Text style={u.h1}>Tu perfil ⚡</Text>
-        <Text style={[u.muted, { marginBottom:28 }]}>Esto nos ayuda a mostrarte los eventos correctos</Text>
-
+        <Text style={[u.muted, { marginBottom:28 }]}>Así te mostramos eventos relevantes</Text>
         <Text style={u.lbl}>¿Dónde jugás?</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom:20 }}>
           {Object.entries(ZONA_LABELS).map(([k,v]) => <Chip key={k} label={v} active={zona===k} onPress={() => setZona(k)} />)}
           <View style={{ width:16 }} />
         </ScrollView>
-
-        <Text style={u.lbl}>¿Qué deportes practicás?</Text>
+        <Text style={u.lbl}>¿Qué deportes?</Text>
         <View style={{ flexDirection:"row", flexWrap:"wrap", gap:10, marginBottom:20 }}>
           {Object.entries(SPORT_ICONS).map(([k,icon]) => (
             <TouchableOpacity key={k}
               style={[s.sportGridItem, sports.includes(k) && s.sportGridItemActive]}
-              onPress={() => toggleSport(k)}>
+              onPress={() => setSports(p => p.includes(k) ? p.filter(x => x!==k) : [...p,k])}>
               <Text style={{ fontSize:24 }}>{icon}</Text>
-              <Text style={[u.muted, { fontSize:11, marginTop:4, fontWeight:"600" }, sports.includes(k) && { color:C.orange }]}>
-                {SPORT_LABELS[k]}
-              </Text>
+              <Text style={[u.muted, { fontSize:11, marginTop:4 }, sports.includes(k) && { color:C.orange }]}>{SPORT_LABELS[k]}</Text>
             </TouchableOpacity>
           ))}
         </View>
-
-        <Text style={u.lbl}>Nivel de juego</Text>
+        <Text style={u.lbl}>Nivel</Text>
         <View style={{ flexDirection:"row", gap:10, marginBottom:32 }}>
           {["principiante","intermedio","avanzado"].map(l => (
             <TouchableOpacity key={l} style={[s.levelBtn, level===l && s.levelBtnActive]} onPress={() => setLevel(l)}>
@@ -304,7 +331,7 @@ function Auth() {
             <Text style={s.logoWord}>VITALIAPP</Text>
           </View>
           <Text style={u.h1}>{mode==="login"?"Bienvenido de vuelta":"Crear cuenta"}</Text>
-          {mode==="register" && <VInput label="Nombre completo" value={name} onChangeText={setName} placeholder="Tu nombre" />}
+          {mode==="register" && <VInput label="Nombre" value={name} onChangeText={setName} placeholder="Tu nombre" />}
           <VInput label="Email" value={email} onChangeText={setEmail} placeholder="tu@email.com" keyboardType="email-address" autoCapitalize="none" />
           <VInput label="Contraseña" value={password} onChangeText={setPassword} placeholder="••••••••" secureTextEntry />
           <OBtn title={mode==="login"?"INGRESAR →":"CREAR CUENTA →"} onPress={mode==="login"?login:register} busy={busy} style={{ marginTop:8 }} />
@@ -318,64 +345,15 @@ function Auth() {
 }
 
 // ─────────────────────────────────────────────
-// EVENT CARD
-// ─────────────────────────────────────────────
-function EventCard({ event, onPress }) {
-  const slots  = event.slots_available;
-  const urgent = slots <= 2 && slots > 0;
-  const full   = slots <= 0;
-  const date   = new Date(event.starts_at).toLocaleDateString("es-AR", {
-    weekday:"short", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit"
-  });
-  return (
-    <TouchableOpacity style={s.card} onPress={onPress} activeOpacity={0.9}>
-      <View style={{ flexDirection:"row", justifyContent:"space-between", alignItems:"flex-start" }}>
-        <View style={{ flexDirection:"row", alignItems:"flex-start", flex:1 }}>
-          <Text style={{ fontSize:28, marginRight:12, marginTop:2 }}>{SPORT_ICONS[event.sport]||"🏅"}</Text>
-          <View style={{ flex:1 }}>
-            <Text style={s.cardTitle} numberOfLines={1}>{event.title}</Text>
-            <Text style={s.cardDate}>{date}</Text>
-          </View>
-        </View>
-        <View style={s.typeBadge}>
-          <Text style={s.typeBadgeTxt}>
-            {event.event_type==="partido"?"PARTIDO":event.event_type==="clase"?"CLASE":"CANCHA"}
-          </Text>
-        </View>
-      </View>
-      <View style={{ flexDirection:"row", flexWrap:"wrap", marginTop:12, gap:6 }}>
-        <View style={s.pill}><Text style={s.pillTxt}>📍 {event.address_public}</Text></View>
-        <View style={s.pill}><Text style={s.pillTxt}>🏅 {event.skill_level}</Text></View>
-        <View style={[s.pill, event.is_free && { backgroundColor:"#00C2A815" }]}>
-          <Text style={[s.pillTxt, event.is_free && { color:C.green }]}>
-            💰 {event.is_free?"Gratis":`$${Number(event.price).toLocaleString("es-AR")}`}
-          </Text>
-        </View>
-      </View>
-      <View style={{ flexDirection:"row", justifyContent:"space-between", alignItems:"center", marginTop:14 }}>
-        <View style={{ flexDirection:"row", alignItems:"center" }}>
-          <View style={s.miniAvatar}>
-            <Text style={{ color:C.black, fontWeight:"800", fontSize:10 }}>{(event.organizer_name||"V")[0].toUpperCase()}</Text>
-          </View>
-          <Text style={[u.muted, { fontSize:11, marginLeft:6 }]}>{event.organizer_name}</Text>
-          {event.organizer_verified && <Text style={{ marginLeft:4, fontSize:11, color:C.orange }}>✓</Text>}
-        </View>
-        <View style={[s.slotBadge, urgent&&{ backgroundColor:"#FF6B0018" }, full&&{ backgroundColor:C.redDim }]}>
-          <Text style={[s.slotTxt, urgent&&{ color:C.orange }, full&&{ color:C.red }]}>
-            {full?"COMPLETO":urgent?`⚠ ${slots} lugar${slots>1?"es":""}`:` ${slots} lugares`}
-          </Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-}
-
-// ─────────────────────────────────────────────
-// HOME
+// HOME — con geolocalización
 // ─────────────────────────────────────────────
 function Home({ profile, onSignOut, onOpenEvent, onCreateEvent, onOpenNotifs, unread }) {
-  const [sport, setSport] = useState(null);
-  const { events, loading, refreshing, refetch } = useFeed(sport);
+  const [sport, setSport]     = useState(null);
+  const [radius, setRadius]   = useState(30);
+  const { coords, geoError, geoLoading } = useGeoLocation();
+  const { events, loading, refreshing, refetch } = useNearbyFeed(coords, sport, radius);
+
+  const nearbyCount = events.filter(e => e.distance_km !== undefined && e.distance_km <= 5).length;
 
   return (
     <SafeAreaView style={{ flex:1, backgroundColor:C.black }}>
@@ -385,15 +363,18 @@ function Home({ profile, onSignOut, onOpenEvent, onCreateEvent, onOpenNotifs, un
       <View style={s.topBar}>
         <View>
           <Text style={s.topGreet}>Hola, {profile?.full_name?.split(" ")[0]||"atleta"} 👋</Text>
-          <Text style={s.topZona}>📍 {ZONA_LABELS[profile?.zona]||"Zona Norte"} · BA</Text>
+          <View style={{ flexDirection:"row", alignItems:"center", gap:4 }}>
+            <Text style={{ fontSize:10 }}>{geoLoading ? "📡" : geoError ? "📍" : "🟢"}</Text>
+            <Text style={s.topZona}>
+              {geoLoading ? "Obteniendo ubicación..." : geoError ? `${ZONA_LABELS[profile?.zona]||"Zona Norte"}` : `Tu ubicación · ${events.length} eventos`}
+            </Text>
+          </View>
         </View>
         <View style={{ flexDirection:"row", alignItems:"center", gap:12 }}>
           <TouchableOpacity onPress={onOpenNotifs} style={{ position:"relative" }}>
             <Text style={{ fontSize:22 }}>🔔</Text>
             {unread > 0 && (
-              <View style={s.notifBadge}>
-                <Text style={{ color:C.white, fontSize:9, fontWeight:"800" }}>{unread}</Text>
-              </View>
+              <View style={s.notifBadge}><Text style={{ color:C.white, fontSize:9, fontWeight:"800" }}>{unread}</Text></View>
             )}
           </TouchableOpacity>
           <TouchableOpacity style={s.avatar} onLongPress={onSignOut}>
@@ -406,9 +387,20 @@ function Home({ profile, onSignOut, onOpenEvent, onCreateEvent, onOpenNotifs, un
       <View style={s.statsRow}>
         <StatBox value={events.length.toString()} label="Eventos" />
         <View style={{ width:1, backgroundColor:C.mid }} />
-        <StatBox value={ZONA_LABELS[profile?.zona]?.split(" ")[0]||"ZN"} label="Tu zona" />
+        <StatBox value={nearbyCount > 0 ? `${nearbyCount}` : (events[0]?.distance_km ? `${events[0].distance_km}km` : "—")} label={nearbyCount > 0 ? "< 5km" : "Más cercano"} />
         <View style={{ width:1, backgroundColor:C.mid }} />
-        <StatBox value={profile?.events_joined?.toString()||"0"} label="Joined" orange />
+        <StatBox value={`${radius}km`} label="Radio" orange />
+      </View>
+
+      {/* RADIO SELECTOR */}
+      <View style={{ flexDirection:"row", gap:8, paddingHorizontal:20, marginTop:12 }}>
+        {[10,20,30,50].map(r => (
+          <TouchableOpacity key={r}
+            style={[{ backgroundColor: radius===r ? C.orange : C.dark, borderRadius:C.radiusSm, paddingHorizontal:14, paddingVertical:6, borderWidth:1, borderColor: radius===r ? C.orange : C.mid }]}
+            onPress={() => setRadius(r)}>
+            <Text style={{ color: radius===r ? C.black : C.muted, fontSize:12, fontWeight:"700" }}>{r}km</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       <ScrollView
@@ -417,7 +409,7 @@ function Home({ profile, onSignOut, onOpenEvent, onCreateEvent, onOpenNotifs, un
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refetch} tintColor={C.orange} />}
       >
         {/* SPORT FILTER */}
-        <View style={{ paddingHorizontal:20, marginTop:20 }}>
+        <View style={{ paddingHorizontal:20, marginTop:16 }}>
           <Text style={u.secLabel}>DEPORTES</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop:10 }}>
             <TouchableOpacity style={[s.sportChip, !sport && s.sportChipActive]} onPress={() => setSport(null)}>
@@ -425,9 +417,9 @@ function Home({ profile, onSignOut, onOpenEvent, onCreateEvent, onOpenNotifs, un
               <Text style={[s.sportChipLbl, !sport && { color:C.orange }]}>Todos</Text>
             </TouchableOpacity>
             {Object.keys(SPORT_ICONS).map(k => {
-              const active = sport === k;
-              const cnt = events.filter(e => e.sport === k).length;
-              if (!active && cnt === 0) return null;
+              const active = sport===k;
+              const cnt = events.filter(e => e.sport===k).length;
+              if (!active && cnt===0) return null;
               return (
                 <TouchableOpacity key={k} style={[s.sportChip, active && s.sportChipActive]} onPress={() => setSport(active?null:k)}>
                   <Text style={s.sportChipIcon}>{SPORT_ICONS[k]}</Text>
@@ -445,17 +437,22 @@ function Home({ profile, onSignOut, onOpenEvent, onCreateEvent, onOpenNotifs, un
         </View>
 
         {/* FEED */}
-        <View style={{ flexDirection:"row", justifyContent:"space-between", alignItems:"center", paddingHorizontal:20, marginTop:24, marginBottom:12 }}>
-          <Text style={u.secLabel}>CERCA TUYO AHORA</Text>
+        <View style={{ flexDirection:"row", justifyContent:"space-between", alignItems:"center", paddingHorizontal:20, marginTop:20, marginBottom:12 }}>
+          <Text style={u.secLabel}>
+            {coords && !geoError ? "CERCA TUYO AHORA" : "ZONA NORTE"}
+          </Text>
           <Text style={u.muted}>{events.length} eventos</Text>
         </View>
 
-        {loading ? <Loader text="Buscando eventos..." />
+        {geoLoading ? <Loader text="Obteniendo ubicación..." />
+          : loading ? <Loader text="Buscando eventos cercanos..." />
           : events.length === 0 ? (
             <View style={{ alignItems:"center", paddingVertical:48 }}>
               <Text style={{ fontSize:48, marginBottom:12 }}>{sport?SPORT_ICONS[sport]:"🏟"}</Text>
-              <Text style={u.muted}>{sport?`Sin eventos de ${SPORT_LABELS[sport]}`:"Sin eventos disponibles"}</Text>
-              <Text style={[u.muted, { fontSize:12, marginTop:6 }]}>Sé el primero en crear uno ⚡</Text>
+              <Text style={u.muted}>Sin eventos en {radius}km</Text>
+              <TouchableOpacity onPress={() => setRadius(r => Math.min(r + 20, 100))} style={{ marginTop:12 }}>
+                <Text style={{ color:C.orange, fontWeight:"700" }}>Ampliar radio →</Text>
+              </TouchableOpacity>
             </View>
           ) : events.map(ev => <EventCard key={ev.id} event={ev} onPress={() => onOpenEvent(ev)} />)
         }
@@ -472,9 +469,73 @@ function Home({ profile, onSignOut, onOpenEvent, onCreateEvent, onOpenNotifs, un
 function StatBox({ value, label, orange }) {
   return (
     <View style={{ flex:1, alignItems:"center" }}>
-      <Text style={[{ fontWeight:"900", fontSize:22, color:C.white }, orange && { color:C.orange }]}>{value}</Text>
-      <Text style={[u.muted, { fontSize:11, marginTop:2, fontWeight:"700", letterSpacing:1 }]}>{label.toUpperCase()}</Text>
+      <Text style={[{ fontWeight:"900", fontSize:20, color:C.white }, orange && { color:C.orange }]}>{value}</Text>
+      <Text style={[u.muted, { fontSize:10, marginTop:2, fontWeight:"700", letterSpacing:1 }]}>{label.toUpperCase()}</Text>
     </View>
+  );
+}
+
+// ─────────────────────────────────────────────
+// EVENT CARD — con distancia
+// ─────────────────────────────────────────────
+function EventCard({ event, onPress }) {
+  const slots  = event.slots_available;
+  const urgent = slots <= 2 && slots > 0;
+  const full   = slots <= 0;
+  const date   = new Date(event.starts_at).toLocaleDateString("es-AR", {
+    weekday:"short", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit"
+  });
+  const hasDistance = event.distance_km !== undefined && event.distance_km !== null;
+
+  return (
+    <TouchableOpacity style={s.card} onPress={onPress} activeOpacity={0.9}>
+      <View style={{ flexDirection:"row", justifyContent:"space-between", alignItems:"flex-start" }}>
+        <View style={{ flexDirection:"row", alignItems:"flex-start", flex:1 }}>
+          <Text style={{ fontSize:28, marginRight:12, marginTop:2 }}>{SPORT_ICONS[event.sport]||"🏅"}</Text>
+          <View style={{ flex:1 }}>
+            <Text style={s.cardTitle} numberOfLines={1}>{event.title}</Text>
+            <Text style={s.cardDate}>{date}</Text>
+          </View>
+        </View>
+        <View style={{ alignItems:"flex-end", gap:4 }}>
+          <View style={s.typeBadge}>
+            <Text style={s.typeBadgeTxt}>
+              {event.event_type==="partido"?"PARTIDO":event.event_type==="clase"?"CLASE":"CANCHA"}
+            </Text>
+          </View>
+          {hasDistance && (
+            <View style={{ backgroundColor:C.orangeDim, borderRadius:6, paddingHorizontal:8, paddingVertical:3 }}>
+              <Text style={{ fontSize:11, color:C.orange, fontWeight:"700" }}>📍 {event.distance_km}km</Text>
+            </View>
+          )}
+        </View>
+      </View>
+
+      <View style={{ flexDirection:"row", flexWrap:"wrap", marginTop:12, gap:6 }}>
+        <View style={s.pill}><Text style={s.pillTxt}>📍 {event.address_public}</Text></View>
+        <View style={s.pill}><Text style={s.pillTxt}>🏅 {event.skill_level}</Text></View>
+        <View style={[s.pill, event.is_free && { backgroundColor:"#00C2A815" }]}>
+          <Text style={[s.pillTxt, event.is_free && { color:C.green }]}>
+            💰 {event.is_free?"Gratis":`$${Number(event.price).toLocaleString("es-AR")}`}
+          </Text>
+        </View>
+      </View>
+
+      <View style={{ flexDirection:"row", justifyContent:"space-between", alignItems:"center", marginTop:14 }}>
+        <View style={{ flexDirection:"row", alignItems:"center" }}>
+          <View style={s.miniAvatar}>
+            <Text style={{ color:C.black, fontWeight:"800", fontSize:10 }}>{(event.organizer_name||"V")[0].toUpperCase()}</Text>
+          </View>
+          <Text style={[u.muted, { fontSize:11, marginLeft:6 }]}>{event.organizer_name}</Text>
+          {event.organizer_verified && <Text style={{ marginLeft:4, fontSize:11, color:C.orange }}>✓</Text>}
+        </View>
+        <View style={[s.slotBadge, urgent && { backgroundColor:"#FF6B0018" }, full && { backgroundColor:C.redDim }]}>
+          <Text style={[s.slotTxt, urgent && { color:C.orange }, full && { color:C.red }]}>
+            {full?"COMPLETO":urgent?`⚠ ${slots} lugar${slots>1?"es":""}`:` ${slots} lugares`}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -482,10 +543,10 @@ function StatBox({ value, label, orange }) {
 // EVENT DETAIL
 // ─────────────────────────────────────────────
 function EventDetail({ event, userId, onBack }) {
-  const [myStatus, setMyStatus] = useState(null);
-  const [message, setMessage]   = useState("");
-  const [busy, setBusy]         = useState(false);
-  const [checking, setChecking] = useState(true);
+  const [myStatus, setMyStatus]         = useState(null);
+  const [message, setMessage]           = useState("");
+  const [busy, setBusy]                 = useState(false);
+  const [checking, setChecking]         = useState(true);
   const [participants, setParticipants] = useState([]);
   const isOrg = event.organizer_id === userId;
 
@@ -515,7 +576,8 @@ function EventDetail({ event, userId, onBack }) {
 
   const cancel = async () => {
     setBusy(true);
-    await supabase.from("event_participants").update({ status:"retirado" }).eq("event_id", event.id).eq("user_id", userId);
+    await supabase.from("event_participants").update({ status:"retirado" })
+      .eq("event_id", event.id).eq("user_id", userId);
     setMyStatus("retirado"); setBusy(false);
   };
 
@@ -542,20 +604,21 @@ function EventDetail({ event, userId, onBack }) {
             <Text style={{ fontSize:22, color:C.white }}>←</Text>
           </TouchableOpacity>
           <Text style={{ color:C.orange, fontSize:11, fontWeight:"700", letterSpacing:2 }}>
-            {event.event_type?.toUpperCase()}
+            {event.event_type?.toUpperCase()} {event.distance_km ? `· ${event.distance_km}km` : ""}
           </Text>
         </View>
-        <View style={{ alignItems:"center", paddingVertical:24, paddingHorizontal:20 }}>
+        <View style={{ alignItems:"center", paddingVertical:20, paddingHorizontal:20 }}>
           <Text style={{ fontSize:56, marginBottom:12 }}>{SPORT_ICONS[event.sport]}</Text>
           <Text style={[u.h1, { textAlign:"center", fontSize:24 }]}>{event.title}</Text>
           <Text style={{ color:C.orange, fontWeight:"700", marginTop:8, textAlign:"center" }}>{dateStr}</Text>
         </View>
-        <View style={{ flexDirection:"row", flexWrap:"wrap", gap:10, paddingHorizontal:20, marginTop:8 }}>
+        <View style={{ flexDirection:"row", flexWrap:"wrap", gap:10, paddingHorizontal:20 }}>
           <InfoCell icon="📍" label="Zona" value={event.address_public} />
           {myStatus==="aprobado" && event.address_exact && <InfoCell icon="🗺" label="Dirección exacta" value={event.address_exact} orange />}
           <InfoCell icon="🏅" label="Nivel" value={event.skill_level} />
           <InfoCell icon="👥" label="Jugadores" value={`${event.current_players}/${event.max_players}`} />
           <InfoCell icon="💰" label="Precio" value={event.is_free?"Gratis":`$${Number(event.price).toLocaleString("es-AR")}`} />
+          {event.distance_km && <InfoCell icon="📡" label="Distancia" value={`${event.distance_km} km`} orange />}
         </View>
         {event.description && (
           <View style={{ paddingHorizontal:20, marginTop:24 }}>
@@ -576,23 +639,25 @@ function EventDetail({ event, userId, onBack }) {
         <View style={s.detailCTA}>
           {(!myStatus || myStatus==="retirado") ? (
             <>
-              <TextInput style={[u.input, { marginBottom:12 }]} placeholder="Mensaje al organizador (opcional)" placeholderTextColor={C.muted} value={message} onChangeText={setMessage} multiline />
+              <TextInput style={[u.input, { marginBottom:12 }]}
+                placeholder="Mensaje al organizador (opcional)"
+                placeholderTextColor={C.muted} value={message} onChangeText={setMessage} multiline />
               <OBtn title="SOLICITAR UNIRME →" onPress={requestJoin} busy={busy} />
             </>
           ) : myStatus==="pendiente" ? (
             <View>
-              <View style={s.statusBanner}><Text style={s.statusBannerTxt}>⏳ Esperando aprobación del organizador</Text></View>
+              <View style={s.statusBanner}><Text style={s.statusBannerTxt}>⏳ Esperando aprobación</Text></View>
               <TouchableOpacity onPress={cancel} style={{ alignItems:"center", marginTop:10 }}>
                 <Text style={u.muted}>Cancelar solicitud</Text>
               </TouchableOpacity>
             </View>
           ) : myStatus==="aprobado" ? (
             <View style={[s.statusBanner, { backgroundColor:C.greenDim, borderColor:C.green }]}>
-              <Text style={[s.statusBannerTxt, { color:C.green }]}>✓ ¡Estás adentro! Dirección desbloqueada arriba</Text>
+              <Text style={[s.statusBannerTxt, { color:C.green }]}>✓ ¡Estás adentro! Dirección desbloqueada</Text>
             </View>
           ) : myStatus==="rechazado" ? (
             <View style={[s.statusBanner, { backgroundColor:C.redDim, borderColor:C.red }]}>
-              <Text style={[s.statusBannerTxt, { color:C.red }]}>Tu solicitud fue rechazada</Text>
+              <Text style={[s.statusBannerTxt, { color:C.red }]}>Solicitud rechazada</Text>
             </View>
           ) : null}
         </View>
@@ -613,10 +678,12 @@ function InfoCell({ icon, label, value, orange }) {
 
 function ParticipantRow({ p, onApprove, onReject }) {
   const prof = p.profiles;
-  const statusColor = { pendiente:C.orange, aprobado:C.green, rechazado:C.red, retirado:C.muted };
+  const sc = { pendiente:C.orange, aprobado:C.green, rechazado:C.red, retirado:C.muted };
   return (
     <View style={{ flexDirection:"row", alignItems:"center", backgroundColor:C.dark, borderRadius:C.radiusSm, padding:12, marginTop:8 }}>
-      <View style={s.miniAvatar}><Text style={{ color:C.black, fontWeight:"800", fontSize:12 }}>{(prof?.full_name||"?")[0].toUpperCase()}</Text></View>
+      <View style={s.miniAvatar}>
+        <Text style={{ color:C.black, fontWeight:"800", fontSize:12 }}>{(prof?.full_name||"?")[0].toUpperCase()}</Text>
+      </View>
       <View style={{ flex:1, marginLeft:10 }}>
         <Text style={{ color:C.white, fontWeight:"700", fontSize:13 }}>{prof?.full_name}</Text>
         <Text style={u.muted}>{prof?.zona?ZONA_LABELS[prof.zona]:""} · {prof?.skill_level}</Text>
@@ -632,9 +699,7 @@ function ParticipantRow({ p, onApprove, onReject }) {
           </TouchableOpacity>
         </View>
       ) : (
-        <Text style={{ color:statusColor[p.status]||C.muted, fontSize:11, fontWeight:"700" }}>
-          {p.status.toUpperCase()}
-        </Text>
+        <Text style={{ color:sc[p.status]||C.muted, fontSize:11, fontWeight:"700" }}>{p.status.toUpperCase()}</Text>
       )}
     </View>
   );
@@ -643,7 +708,7 @@ function ParticipantRow({ p, onApprove, onReject }) {
 // ─────────────────────────────────────────────
 // CREATE EVENT
 // ─────────────────────────────────────────────
-function CreateEvent({ profile, onBack, onDone }) {
+function CreateEvent({ profile, coords, onBack, onDone }) {
   const [f, setF] = useState({
     event_type:"partido", sport:"futbol", title:"", description:"",
     skill_level:"todos", zona:profile?.zona||"tigre",
@@ -651,7 +716,7 @@ function CreateEvent({ profile, onBack, onDone }) {
     max_players:"10", is_free:true, price:"0", date:"", time:"",
   });
   const [busy, setBusy] = useState(false);
-  const set = (k, v) => setF(p => ({ ...p, [k]:v }));
+  const set = (k,v) => setF(p => ({ ...p, [k]:v }));
 
   const create = async () => {
     if (!f.title || !f.address_public || !f.date || !f.time)
@@ -659,14 +724,17 @@ function CreateEvent({ profile, onBack, onDone }) {
     setBusy(true);
     const { data: { session } } = await supabase.auth.getSession();
     const { error } = await supabase.from("events").insert({
-      organizer_id:   session.user.id,
-      event_type:     f.event_type, sport: f.sport,
-      title:          f.title, description: f.description,
-      skill_level:    f.skill_level, zona: f.zona,
+      organizer_id: session.user.id,
+      event_type: f.event_type, sport: f.sport,
+      title: f.title, description: f.description,
+      skill_level: f.skill_level, zona: f.zona,
       address_public: f.address_public, address_exact: f.address_exact,
-      max_players:    parseInt(f.max_players)||10,
-      is_free:        f.is_free, price: f.is_free ? 0 : parseFloat(f.price)||0,
-      starts_at:      new Date(`${f.date}T${f.time}:00`).toISOString(),
+      max_players: parseInt(f.max_players)||10,
+      is_free: f.is_free, price: f.is_free ? 0 : parseFloat(f.price)||0,
+      starts_at: new Date(`${f.date}T${f.time}:00`).toISOString(),
+      // Usar coords del usuario como ubicación del evento
+      lat: coords?.latitude || null,
+      lng: coords?.longitude || null,
     });
     if (error) Alert.alert("Error", error.message);
     else { Alert.alert("¡Evento publicado! ⚡"); onDone(); }
@@ -732,6 +800,7 @@ function CreateEvent({ profile, onBack, onDone }) {
             </TouchableOpacity>
           </View>
           {!f.is_free && <VInput label="Precio ($)" value={f.price} onChangeText={v=>set("price",v)} keyboardType="numeric" placeholder="2500" />}
+          {coords && <Text style={[u.muted, { marginBottom:12, fontSize:12 }]}>📡 Tu ubicación será usada como punto de referencia del evento</Text>}
           <OBtn title="PUBLICAR EVENTO ⚡" onPress={create} busy={busy} style={{ marginTop:8 }} />
         </ScrollView>
       </KeyboardAvoidingView>
@@ -740,7 +809,7 @@ function CreateEvent({ profile, onBack, onDone }) {
 }
 
 // ─────────────────────────────────────────────
-// NOTIFICATIONS SCREEN
+// NOTIFICATIONS
 // ─────────────────────────────────────────────
 function Notifications({ notifs, onBack, onMarkRead }) {
   useEffect(() => { onMarkRead(); }, []);
@@ -756,13 +825,10 @@ function Notifications({ notifs, onBack, onMarkRead }) {
       {notifs.length === 0 ? (
         <View style={{ flex:1, alignItems:"center", justifyContent:"center" }}>
           <Text style={{ fontSize:48 }}>🔔</Text>
-          <Text style={[u.muted, { marginTop:12 }]}>Sin notificaciones por ahora</Text>
+          <Text style={[u.muted, { marginTop:12 }]}>Sin notificaciones</Text>
         </View>
       ) : (
-        <FlatList
-          data={notifs}
-          keyExtractor={item => item.id}
-          contentContainerStyle={{ padding:20 }}
+        <FlatList data={notifs} keyExtractor={i => i.id} contentContainerStyle={{ padding:20 }}
           renderItem={({ item }) => (
             <View style={[s.card, !item.read && { borderColor:C.orange }]}>
               <Text style={{ color:C.white, fontWeight:"700", fontSize:15, marginBottom:4 }}>{item.title}</Text>
@@ -782,11 +848,12 @@ function Notifications({ notifs, onBack, onMarkRead }) {
 // ROOT
 // ─────────────────────────────────────────────
 export default function App() {
-  const [splashDone, setSplashDone] = useState(false);
-  const [screen, setScreen]         = useState("home");
+  const [splashDone, setSplashDone]   = useState(false);
+  const [screen, setScreen]           = useState("home");
   const [activeEvent, setActiveEvent] = useState(null);
   const { session, profile, loading, signOut } = useAuth();
-  const { notifs, unread, markAllRead } = useNotifications(session?.user?.id);
+  const { coords } = useGeoLocation();
+  const { notifs, unread, markRead }  = useNotifications(session?.user?.id);
 
   if (!splashDone) return <Splash onEnter={() => setSplashDone(true)} />;
   if (loading)     return <Loader text="Iniciando VitaliApp..." />;
@@ -796,16 +863,15 @@ export default function App() {
     <EventDetail event={activeEvent} userId={session.user.id} onBack={() => setScreen("home")} />
   );
   if (screen==="create") return (
-    <CreateEvent profile={profile} onBack={() => setScreen("home")} onDone={() => setScreen("home")} />
+    <CreateEvent profile={profile} coords={coords} onBack={() => setScreen("home")} onDone={() => setScreen("home")} />
   );
   if (screen==="notifs") return (
-    <Notifications notifs={notifs} onBack={() => setScreen("home")} onMarkRead={markAllRead} />
+    <Notifications notifs={notifs} onBack={() => setScreen("home")} onMarkRead={markRead} />
   );
 
   return (
     <Home
-      profile={profile} onSignOut={signOut}
-      unread={unread}
+      profile={profile} onSignOut={signOut} unread={unread}
       onOpenEvent={ev => { setActiveEvent(ev); setScreen("event"); }}
       onCreateEvent={() => setScreen("create")}
       onOpenNotifs={() => setScreen("notifs")}
@@ -830,47 +896,44 @@ const u = StyleSheet.create({
 });
 
 const s = StyleSheet.create({
-  splash:      { flex:1, backgroundColor:C.black, alignItems:"center", justifyContent:"space-between", paddingVertical:60, paddingHorizontal:28 },
-  splashGlow:  { position:"absolute", width:SW*1.2, height:SW*1.2, borderRadius:SW*0.6, backgroundColor:"#FF6B0015", top:-SW*0.5, alignSelf:"center" },
-  logoMark:    { width:84, height:84, borderRadius:42, backgroundColor:C.orange, alignItems:"center", justifyContent:"center", marginBottom:20, shadowColor:C.orange, shadowOffset:{width:0,height:0}, shadowOpacity:0.9, shadowRadius:30, elevation:20 },
-  logoWord:    { fontSize:32, color:C.white, fontWeight:"900", letterSpacing:4 },
-  logoTagline: { fontSize:11, color:C.orange, fontWeight:"700", letterSpacing:3, marginTop:6 },
-  splashHero:  { fontSize:clamp(48, SW*0.12, 72), color:C.white, fontWeight:"900", textAlign:"center", lineHeight:clamp(48,SW*0.12,72)*0.95, letterSpacing:-1 },
-  topBar:      { flexDirection:"row", justifyContent:"space-between", alignItems:"center", paddingHorizontal:20, paddingTop:16, paddingBottom:12 },
-  topGreet:    { fontSize:18, color:C.white, fontWeight:"800" },
-  topZona:     { fontSize:12, color:C.orange, marginTop:2, fontWeight:"700" },
-  avatar:      { width:40, height:40, borderRadius:20, backgroundColor:C.orange, alignItems:"center", justifyContent:"center" },
-  avatarTxt:   { fontSize:16, color:C.black, fontWeight:"900" },
-  notifBadge:  { position:"absolute", top:-4, right:-4, backgroundColor:C.red, borderRadius:8, minWidth:16, height:16, alignItems:"center", justifyContent:"center", paddingHorizontal:2 },
-  statsRow:    { flexDirection:"row", backgroundColor:C.dark, marginHorizontal:20, borderRadius:C.radiusMd, padding:16, marginBottom:8 },
-  sportChip:   { flexDirection:"row", alignItems:"center", backgroundColor:C.dark, borderRadius:C.radiusSm, paddingHorizontal:14, paddingVertical:10, marginRight:10, borderWidth:1, borderColor:C.mid },
+  splash:       { flex:1, backgroundColor:C.black, alignItems:"center", justifyContent:"space-between", paddingVertical:60, paddingHorizontal:28 },
+  splashGlow:   { position:"absolute", width:SW*1.2, height:SW*1.2, borderRadius:SW*0.6, backgroundColor:"#FF6B0015", top:-SW*0.5, alignSelf:"center" },
+  logoMark:     { width:84, height:84, borderRadius:42, backgroundColor:C.orange, alignItems:"center", justifyContent:"center", marginBottom:20, shadowColor:C.orange, shadowOffset:{width:0,height:0}, shadowOpacity:0.9, shadowRadius:30, elevation:20 },
+  logoWord:     { fontSize:32, color:C.white, fontWeight:"900", letterSpacing:4 },
+  logoSub:      { fontSize:11, color:C.orange, fontWeight:"700", letterSpacing:3, marginTop:6 },
+  splashHero:   { fontSize:Math.min(64, SW*0.14), color:C.white, fontWeight:"900", textAlign:"center", lineHeight:Math.min(64,SW*0.14)*0.95, letterSpacing:-1 },
+  topBar:       { flexDirection:"row", justifyContent:"space-between", alignItems:"center", paddingHorizontal:20, paddingTop:16, paddingBottom:12 },
+  topGreet:     { fontSize:18, color:C.white, fontWeight:"800" },
+  topZona:      { fontSize:11, color:C.orange, marginTop:2, fontWeight:"600" },
+  avatar:       { width:40, height:40, borderRadius:20, backgroundColor:C.orange, alignItems:"center", justifyContent:"center" },
+  avatarTxt:    { fontSize:16, color:C.black, fontWeight:"900" },
+  notifBadge:   { position:"absolute", top:-4, right:-4, backgroundColor:C.red, borderRadius:8, minWidth:16, height:16, alignItems:"center", justifyContent:"center", paddingHorizontal:2 },
+  statsRow:     { flexDirection:"row", backgroundColor:C.dark, marginHorizontal:20, borderRadius:C.radiusMd, padding:14, marginBottom:4 },
+  sportChip:    { flexDirection:"row", alignItems:"center", backgroundColor:C.dark, borderRadius:C.radiusSm, paddingHorizontal:14, paddingVertical:10, marginRight:10, borderWidth:1, borderColor:C.mid },
   sportChipActive:{ backgroundColor:C.orangeDim, borderColor:C.orange },
-  sportChipIcon:  { fontSize:18, marginRight:6 },
-  sportChipLbl:   { fontSize:13, color:C.muted, fontWeight:"700" },
-  badge:       { marginLeft:8, backgroundColor:C.mid, borderRadius:10, paddingHorizontal:6, paddingVertical:1 },
-  card:        { backgroundColor:"#111111", borderRadius:C.radiusMd, marginHorizontal:20, marginBottom:12, padding:16, borderWidth:1, borderColor:C.mid },
-  cardTitle:   { fontSize:15, color:C.white, fontWeight:"800" },
-  cardDate:    { fontSize:12, color:C.orange, marginTop:3, fontWeight:"700" },
-  typeBadge:   { backgroundColor:C.orangeDim, borderRadius:6, paddingHorizontal:8, paddingVertical:3 },
-  typeBadgeTxt:{ fontSize:10, color:C.orange, fontWeight:"700" },
-  pill:        { backgroundColor:C.mid, borderRadius:6, paddingHorizontal:8, paddingVertical:4 },
-  pillTxt:     { fontSize:11, color:C.muted },
-  miniAvatar:  { width:26, height:26, borderRadius:13, backgroundColor:C.orange, alignItems:"center", justifyContent:"center" },
-  slotBadge:   { backgroundColor:C.mid, borderRadius:6, paddingHorizontal:10, paddingVertical:5 },
-  slotTxt:     { fontSize:12, color:C.muted, fontWeight:"700" },
-  fab:         { position:"absolute", bottom:24, left:20, right:20, backgroundColor:C.orange, borderRadius:C.radiusMd, paddingVertical:16, alignItems:"center", shadowColor:C.orange, shadowOffset:{width:0,height:8}, shadowOpacity:0.5, shadowRadius:20, elevation:12 },
-  fabTxt:      { color:C.black, fontSize:15, fontWeight:"800", letterSpacing:1.5 },
-  infoCell:    { flex:1, minWidth:(SW-60)/2, backgroundColor:"#111111", borderRadius:C.radiusSm, padding:14, borderWidth:1, borderColor:C.mid },
-  detailCTA:   { position:"absolute", bottom:0, left:0, right:0, backgroundColor:"#111111", padding:20, paddingBottom:32, borderTopWidth:1, borderColor:C.mid },
-  statusBanner:{ backgroundColor:C.orangeDim, borderRadius:C.radiusSm, padding:14, borderWidth:1, borderColor:C.orange },
+  sportChipIcon:{ fontSize:18, marginRight:6 },
+  sportChipLbl: { fontSize:13, color:C.muted, fontWeight:"700" },
+  badge:        { marginLeft:8, backgroundColor:C.mid, borderRadius:10, paddingHorizontal:6, paddingVertical:1 },
+  card:         { backgroundColor:"#111111", borderRadius:C.radiusMd, marginHorizontal:20, marginBottom:12, padding:16, borderWidth:1, borderColor:C.mid },
+  cardTitle:    { fontSize:15, color:C.white, fontWeight:"800" },
+  cardDate:     { fontSize:12, color:C.orange, marginTop:3, fontWeight:"700" },
+  typeBadge:    { backgroundColor:C.orangeDim, borderRadius:6, paddingHorizontal:8, paddingVertical:3 },
+  typeBadgeTxt: { fontSize:10, color:C.orange, fontWeight:"700" },
+  pill:         { backgroundColor:C.mid, borderRadius:6, paddingHorizontal:8, paddingVertical:4 },
+  pillTxt:      { fontSize:11, color:C.muted },
+  miniAvatar:   { width:26, height:26, borderRadius:13, backgroundColor:C.orange, alignItems:"center", justifyContent:"center" },
+  slotBadge:    { backgroundColor:C.mid, borderRadius:6, paddingHorizontal:10, paddingVertical:5 },
+  slotTxt:      { fontSize:12, color:C.muted, fontWeight:"700" },
+  fab:          { position:"absolute", bottom:24, left:20, right:20, backgroundColor:C.orange, borderRadius:C.radiusMd, paddingVertical:16, alignItems:"center", shadowColor:C.orange, shadowOffset:{width:0,height:8}, shadowOpacity:0.5, shadowRadius:20, elevation:12 },
+  fabTxt:       { color:C.black, fontSize:15, fontWeight:"800", letterSpacing:1.5 },
+  infoCell:     { flex:1, minWidth:(SW-60)/2, backgroundColor:"#111111", borderRadius:C.radiusSm, padding:14, borderWidth:1, borderColor:C.mid },
+  detailCTA:    { position:"absolute", bottom:0, left:0, right:0, backgroundColor:"#111111", padding:20, paddingBottom:32, borderTopWidth:1, borderColor:C.mid },
+  statusBanner: { backgroundColor:C.orangeDim, borderRadius:C.radiusSm, padding:14, borderWidth:1, borderColor:C.orange },
   statusBannerTxt:{ color:C.orange, fontWeight:"700", textAlign:"center" },
-  actionBtn:   { width:36, height:36, borderRadius:8, alignItems:"center", justifyContent:"center" },
+  actionBtn:    { width:36, height:36, borderRadius:8, alignItems:"center", justifyContent:"center" },
   sportGridItem:{ width:(SW-68)/3, backgroundColor:C.dark, borderRadius:C.radiusSm, padding:12, alignItems:"center", borderWidth:1, borderColor:C.mid },
   sportGridItemActive:{ backgroundColor:C.orangeDim, borderColor:C.orange },
-  levelBtn:    { flex:1, backgroundColor:C.dark, borderRadius:C.radiusSm, paddingVertical:10, alignItems:"center", borderWidth:1, borderColor:C.mid },
+  levelBtn:     { flex:1, backgroundColor:C.dark, borderRadius:C.radiusSm, paddingVertical:10, alignItems:"center", borderWidth:1, borderColor:C.mid },
   levelBtnActive:{ backgroundColor:C.orangeDim, borderColor:C.orange },
-  levelTxt:    { fontSize:12, color:C.muted, fontWeight:"700" },
+  levelTxt:     { fontSize:12, color:C.muted, fontWeight:"700" },
 });
-
-// Helper para font size responsivo
-function clamp(min, val, max) { return Math.min(max, Math.max(min, val)); }
