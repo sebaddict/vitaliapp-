@@ -16,12 +16,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.vitaliapp.app",
-      "buildNumber": "1",
-      "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "VitaliApp necesita tu ubicación para mostrarte eventos cercanos.",
-        "NSCameraUsageDescription": "VitaliApp usa la cámara para subir tu foto de perfil.",
-        "NSPhotoLibraryUsageDescription": "VitaliApp accede a tus fotos para tu avatar."
-      }
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
@@ -29,24 +24,13 @@
         "backgroundColor": "#000000"
       },
       "package": "com.vitaliapp.app",
-      "versionCode": 1,
-      "permissions": [
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE"
-      ]
-    },
-    "web": {
-      "favicon": "./assets/favicon.png",
-      "bundler": "metro"
+      "versionCode": 1
     },
     "extra": {
-      "supabaseUrl": "https://qjutbnewvkhdjmjdiges.supabase.co",
-      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqdXRibmV3dmtoZGptamRpZ2VzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjMxODAsImV4cCI6MjA4OTY5OTE4MH0.CjQa5BLBrXjEP-oIhHNPbeE20l72v2Dz30SqWJdmpV8",
       "eas": {
-        "projectId": "vitaliapp-prod"
+        "projectId": "c43b877a-2975-4cf5-95bb-e2cb1733c2cb"
       }
-    }
+    },
+    "owner": "sebaddict"
   }
 }
