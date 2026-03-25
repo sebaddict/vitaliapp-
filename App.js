@@ -25,8 +25,19 @@ const SB_URL = "https://qjutbnewvkhdjmjdiges.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqdXRibmV3dmtoZGptamRpZ2VzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjMxODAsImV4cCI6MjA4OTY5OTE4MH0.CjQa5BLBrXjEP-oIhHNPbeE20l72v2Dz30SqWJdmpV8";
 const FN = `${SB_URL}/functions/v1`;
 
+// Usa WebSocket nativo de React Native — evita el módulo 'ws' de Node.js
+// Esto resuelve los errores de net/tls/stream en el bundler
 const supabase = createClient(SB_URL, SB_KEY, {
-  auth: { storage: AsyncStorage, autoRefreshToken: true, persistSession: true, detectSessionInUrl: false },
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+  realtime: {
+    transport: WebSocket,
+    params: { eventsPerSecond: 10 },
+  },
 });
 
 const C = {
