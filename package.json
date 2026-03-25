@@ -11,21 +11,13 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.1.2",
     "@supabase/supabase-js": "2.49.1",
-    "buffer": "6.0.3",
-    "browserify-zlib": "0.2.0",
-    "events": "3.3.0",
     "expo": "~53.0.0",
     "expo-constants": "~17.1.8",
     "expo-location": "~18.1.5",
     "expo-status-bar": "~2.2.3",
-    "https-browserify": "1.0.0",
-    "path-browserify": "1.0.1",
     "react": "19.0.0",
     "react-native": "0.79.6",
-    "react-native-get-random-values": "1.11.0",
-    "react-native-url-polyfill": "2.0.0",
-    "stream-browserify": "3.0.0",
-    "stream-http": "3.2.0"
+    "react-native-url-polyfill": "2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.0"
