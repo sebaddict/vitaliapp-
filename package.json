@@ -2,7 +2,6 @@
   "name": "vitaliapp",
   "version": "1.0.0",
   "main": "App.js",
-  "packageManager": "npm@10.0.0",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
