@@ -7,15 +7,7 @@
     "development": {
       "distribution": "internal",
       "android": {
-        "gradleCommand": ":app:assembleDebug",
         "buildType": "apk"
-      },
-      "ios": {
-        "buildConfiguration": "Debug",
-        "simulator": true
-      },
-      "env": {
-        "APP_ENV": "development"
       }
     },
     "preview": {
@@ -23,9 +15,7 @@
       "android": {
         "buildType": "apk"
       },
-      "env": {
-        "APP_ENV": "preview"
-      }
+      "node": "20.18.0"
     },
     "production": {
       "autoIncrement": true,
@@ -34,22 +24,6 @@
       },
       "ios": {
         "buildConfiguration": "Release"
-      },
-      "env": {
-        "APP_ENV": "production"
-      }
-    }
-  },
-  "submit": {
-    "production": {
-      "android": {
-        "serviceAccountKeyPath": "./google-services-key.json",
-        "track": "internal"
-      },
-      "ios": {
-        "appleId": "tu@email.com",
-        "ascAppId": "XXXXXXXXXX",
-        "appleTeamId": "XXXXXXXXXX"
       }
     }
   }
