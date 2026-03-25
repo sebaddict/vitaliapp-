@@ -1,0 +1,7 @@
+// Shim vacío para 'tls' en React Native
+// @supabase/realtime-js usa WebSocket nativo de RN, no necesita tls
+module.exports = {
+  connect: () => ({}),
+  createServer: () => ({}),
+  TLSSocket: function() {},
+};
