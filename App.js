@@ -1,5 +1,6 @@
+import 'react-native-url-polyfill/auto'; // DEBE ser la primera línea — fix crash RN
 // ============================================================
-// VITALIAPP — App.js v5.0 SPRINT 4
+// VITALIAPP — App.js v5.1 SPRINT 4 — CRASH FIX
 // ✅ Tab bar: Inicio · Explorar · Crear · Perfil · Avisos
 // ✅ Perfil completo: historial, logros, stats, ranking
 // ✅ Chat grupal realtime por evento
@@ -76,8 +77,14 @@ function useAuth() {
   }, []);
 
   const loadProfile = async (uid) => {
-    const { data } = await supabase.from("profiles").select("*").eq("id", uid).single();
-    setProfile(data); setLoading(false);
+    try {
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", uid).single();
+      if (error) console.warn("loadProfile error:", error.message);
+      setProfile(data || null);
+    } catch(e) {
+      console.warn("loadProfile catch:", e.message);
+    }
+    setLoading(false);
   };
 
   return { session, profile, loading, signOut: () => supabase.auth.signOut() };
@@ -262,8 +269,19 @@ function Auth() {
   const saveProfile = async () => {
     if (!zona||sports.length===0||!level) return Alert.alert("Completá tu perfil deportivo");
     setBusy(true);
-    const { data:{ session } } = await supabase.auth.getSession();
-    await supabase.from("profiles").update({ zona, sports, skill_level:level, onboarding_done:true }).eq("id", session.user.id);
+    try {
+      const { data: sd } = await supabase.auth.getSession();
+      if (!sd?.session?.user?.id) throw new Error("Sin sesión");
+      const { error } = await supabase.from("profiles").update({
+        zona, sports, skill_level: level, onboarding_done: true
+      }).eq("id", sd.session.user.id);
+      if (error) throw error;
+      // Recargar perfil después del onboarding
+      const { data: p } = await supabase.from("profiles").select("*").eq("id", sd.session.user.id).single();
+      if (p) { setMode("app"); }
+    } catch(e) {
+      Alert.alert("Error", e.message || "No se pudo guardar");
+    }
     setBusy(false);
   };
 
