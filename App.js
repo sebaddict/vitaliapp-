@@ -210,32 +210,27 @@ const Ava = ({ name, url, size = 40 }) => (
 
 // ── SPLASH ───────────────────────────────────
 function Splash({ onEnter }) {
-  const fade  = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(0.8)).current;
-  const slide = useRef(new Animated.Value(40)).current;
+  // Hermes-safe: sin Animated.sequence/spring que puede crashar en producción
+  // Usando solo useState + setTimeout en lugar de Animated API
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(fade,  { toValue:1, duration:700, useNativeDriver:true }),
-        Animated.spring(scale, { toValue:1, tension:60, friction:7, useNativeDriver:true }),
-      ]),
-      Animated.timing(slide, { toValue:0, duration:400, useNativeDriver:true }),
-    ]).start();
+    const t = setTimeout(() => setVisible(true), 100);
+    return () => clearTimeout(t);
   }, []);
   return (
     <View style={s.splash}>
       <StatusBar barStyle="light-content" backgroundColor={C.black} />
       <View style={s.splashGlow} />
-      <Animated.View style={{ opacity:fade, transform:[{scale}], alignItems:"center" }}>
+      <View style={{ alignItems:"center" }}>
         <View style={s.logoMark}><Text style={{ fontSize:40 }}>⚡</Text></View>
         <Text style={s.logoWord}>VITALIAPP</Text>
         <Text style={s.logoSub}>ENERGÍA QUE TE CONECTA</Text>
-      </Animated.View>
-      <Animated.View style={[{ width:"100%", alignItems:"center" }, { opacity:fade, transform:[{translateY:slide}] }]}>
+      </View>
+      <View style={{ width:"100%", alignItems:"center" }}>
         <Text style={s.splashHero}>TU DEPORTE,{"\n"}TU BARRIO.</Text>
         <OBtn title="EMPEZAR →" onPress={onEnter} style={{ width:"100%", marginTop:32 }} />
         <Text style={[u.muted, { marginTop:14, fontSize:11 }]}>Zona Norte · Buenos Aires</Text>
-      </Animated.View>
+      </View>
     </View>
   );
 }
